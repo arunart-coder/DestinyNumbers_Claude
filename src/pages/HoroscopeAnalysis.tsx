@@ -1,3 +1,4 @@
+import { imgUrl } from '../lib/utils';
 import React from 'react';
 import { motion } from 'motion/react';
 import { 
@@ -53,7 +54,7 @@ export default function HoroscopeAnalysis() {
             <div className="relative group">
               <div className="absolute inset-0 bg-[#C9A84C]/20 -rotate-3 group-hover:rotate-0 transition-transform" />
               <img 
-                src="https://images.unsplash.com/photo-1506466010722-395aa2bef877?w=800" 
+                src={imgUrl('/assets/img/svc-dasha-lg.jpg')} 
                 alt="Astrology Chart" 
                 className="relative z-10 w-full h-[400px] object-cover grayscale border border-white/10 hover:grayscale-0 transition-all duration-700" 
               />
@@ -78,7 +79,7 @@ export default function HoroscopeAnalysis() {
 
         {/* Why Get Analysis */}
         <section className="mb-24 py-20 bg-[#1C3557] text-white p-12 md:p-20 relative overflow-hidden">
-           <div className="absolute inset-0 bg-[url('/assets/img/sacred-geometry.png')] opacity-5" />
+           <div className="absolute inset-0 bg-[url(imgUrl('/assets/img/sacred-geometry.png')] opacity-5" />
            <div className="relative z-10">
              <h2 className="text-3xl md:text-5xl font-display italic text-center mb-16 text-white">Why Analyze Your <span className="text-[#C9A84C]">Horoscope?</span></h2>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

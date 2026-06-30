@@ -1,18 +1,21 @@
+import { imgUrl } from '../lib/utils';
 import { useState, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Star, 
-  ShoppingCart, 
-  X, 
-  Trash2, 
-  ShoppingBag, 
-  Check, 
+import {
+  Star,
+  ShoppingCart,
+  X,
+  Trash2,
+  ShoppingBag,
+  Check,
   SlidersHorizontal,
   FileCode,
   Copy,
   Info,
-  MapPin
+  MapPin,
+  Plus,
+  Home
 } from 'lucide-react';
 import { BRAND_DATA } from '../lib/constants';
 import { HeroHeader } from '../components/HeroHeader';
@@ -38,7 +41,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Gold-plated solar grid for solar activation, leadership, vitality, and authority.',
     rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/d/18oI9OUqPlwxQDii0SxWd9Byjf7Xaqq_7'
+    image: imgUrl('/assets/img/products/surya-yantra.jpg')
   },
   {
     id: 'budh-yantra',
@@ -48,7 +51,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Sacred matrix for Mercury (Budha) to enhance intellect, business decisions, and trade growth.',
     rating: 4.8,
-    image: 'https://lh3.googleusercontent.com/d/1ih1bR5ro8KkoTrgwFbbubn3Qheg07iL6'
+    image: imgUrl('/assets/img/products/budh-yantra.jpg')
   },
   {
     id: 'budh-pyra-yantra',
@@ -58,7 +61,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Pyramid-amplified Mercury grid for rapid analytical clarity, professional focus, and commerce.',
     rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/d/1ih1bR5ro8KkoTrgwFbbubn3Qheg07iL6'
+    image: imgUrl('/assets/img/products/budh-pyra-yantra.jpg')
   },
   {
     id: 'pyra-yantra',
@@ -68,7 +71,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Multi-layered pyramid geometry plate matching prime cosmic frequencies for environmental balance.',
     rating: 4.7,
-    image: 'https://lh3.googleusercontent.com/d/1PpZyqI7q5mtXkLQiTujf_dmC6k6vggS1'
+    image: imgUrl('/assets/img/products/pyra-yantra.jpg')
   },
   {
     id: 'gayatri-yantra',
@@ -78,7 +81,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Supreme radiant grid invoking divine light, spiritual expansion, clear consciousness, and block removal.',
     rating: 5.0,
-    image: 'https://lh3.googleusercontent.com/d/1Jda5Y3zceqSb7KveQi7Z30P7FDAYYurd'
+    image: imgUrl('/assets/img/products/gayatri-yantra.jpg')
   },
   {
     id: 'saraswati-yantra',
@@ -88,7 +91,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Refined geometric plate for concentration, artistic mastery, academics, and divine creative wisdom.',
     rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/d/1dL9rmIG6dcsQ4ICB_BPX2kyOaPk0JPtv'
+    image: imgUrl('/assets/img/products/saraswati-yantra.jpg')
   },
   {
     id: 'surya-pyra-yantra',
@@ -98,7 +101,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Pyramid solar grid creating accelerated energy amplification for business prestige and physical strength.',
     rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/d/18oI9OUqPlwxQDii0SxWd9Byjf7Xaqq_7'
+    image: imgUrl('/assets/img/products/surya-pyra-yantra.jpg')
   },
   {
     id: 'surya-budh-yantra',
@@ -108,7 +111,7 @@ const PRODUCTS: Product[] = [
     price: 7999,
     description: 'Budhaditya combination grid that balances logic and action. Triggers profound executive success.',
     rating: 5.0,
-    image: 'https://lh3.googleusercontent.com/d/18oI9OUqPlwxQDii0SxWd9Byjf7Xaqq_7'
+    image: imgUrl('/assets/img/products/surya-budh-yantra.jpg')
   },
   {
     id: 'crystal-bracelet',
@@ -118,7 +121,7 @@ const PRODUCTS: Product[] = [
     price: 600,
     description: 'Premium amethyst and quartz crystal beads tuned to clear energetic blockages and restore calm focus.',
     rating: 4.8,
-    image: 'https://lh3.googleusercontent.com/d/1w_vJONo8RfWgo-rdBaPCBzHZwRz84Vzn'
+    image: imgUrl('/assets/img/products/crystal-bracelet.jpg')
   },
   {
     id: 'wood-crystal-bracelet',
@@ -128,7 +131,7 @@ const PRODUCTS: Product[] = [
     price: 500,
     description: 'Natural aromatic sandalwood beads matched with genuine Tiger\'s Eye for deep grounding and shield protection.',
     rating: 4.7,
-    image: 'https://lh3.googleusercontent.com/d/1HxGOgrqj6E2Uc7z2EC6hKXzZeM6hoBFX'
+    image: imgUrl('/assets/img/products/wood-crystal-bracelet.jpg')
   },
   {
     id: 'vastu-crystal-set',
@@ -138,7 +141,7 @@ const PRODUCTS: Product[] = [
     price: 6000,
     description: 'Maximum pyramid energy for home, office, and meditation spaces.',
     rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/d/1NcGEeoddDjsl9XPyo5cqIcwTMM6fdJuC'
+    image: imgUrl('/assets/img/products/max-pyramid.webp')
   },
   {
     id: 'vastu-copper-helix',
@@ -149,7 +152,7 @@ const PRODUCTS: Product[] = [
     price: 2500,
     description: 'Nine planets. One foundation. A lifetime of cosmic harmony.',
     rating: 4.8,
-    image: 'https://lh3.googleusercontent.com/d/16PaRL-J3cJ9NYytzyvEdROAnyKBmYknm'
+    image: imgUrl('/assets/img/products/navratna-vastu.jpg')
   }
 ];
 
@@ -247,44 +250,44 @@ const PRODUCT_DETAILED_BULLETS: Record<string, string[]> = {
 
 const PRODUCT_GALLERIES: Record<string, string[]> = {
   'surya-yantra': [
-    'https://lh3.googleusercontent.com/d/18oI9OUqPlwxQDii0SxWd9Byjf7Xaqq_7',
+    imgUrl('/assets/img/product-yantra-1.jpg'),
     'https://lh3.googleusercontent.com/d/1T7q2so20z691C0zr1X7U5ozU1sxbQA-h',
     'https://lh3.googleusercontent.com/d/1HaECHyqDsi4u3HgQ2aQddmqYi7BMqx7p',
     'https://lh3.googleusercontent.com/d/1KG8NNQ9-Z-l4hybVmoYKugTi94ij1o0j'
   ],
   'budh-yantra': [
-    'https://lh3.googleusercontent.com/d/1ih1bR5ro8KkoTrgwFbbubn3Qheg07iL6',
+    imgUrl('/assets/img/product-bracelet-1.jpg'),
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR',
     'https://lh3.googleusercontent.com/d/162a_bZWUebZ9ffpCmoCflqdJn1lrkuNa',
     'https://lh3.googleusercontent.com/d/1PSDzpABHR2rDVPXr4SFFL4a5L4oy6DdC'
   ],
   'budh-pyra-yantra': [
-    'https://lh3.googleusercontent.com/d/1ih1bR5ro8KkoTrgwFbbubn3Qheg07iL6',
-    'https://lh3.googleusercontent.com/d/1PpZyqI7q5mtXkLQiTujf_dmC6k6vggS1',
+    imgUrl('/assets/img/product-bracelet-1.jpg'),
+    imgUrl('/assets/img/product-vastu-1.jpg'),
     'https://lh3.googleusercontent.com/d/1XzKvx2OEtwsbXeqFSJHfNd4icGqMXNtn',
     'https://lh3.googleusercontent.com/d/12UyKiXog-ulOs2Fk3lL_J0i-h-9btNLe'
   ],
   'pyra-yantra': [
-    'https://lh3.googleusercontent.com/d/1PpZyqI7q5mtXkLQiTujf_dmC6k6vggS1',
+    imgUrl('/assets/img/product-vastu-1.jpg'),
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR',
     'https://lh3.googleusercontent.com/d/12UyKiXog-ulOs2Fk3lL_J0i-h-9btNLe',
     'https://lh3.googleusercontent.com/d/1vasvw1inCM-MOHxPbUb83D0SUPrerxOm'
   ],
   'gayatri-yantra': [
-    'https://lh3.googleusercontent.com/d/1Jda5Y3zceqSb7KveQi7Z30P7FDAYYurd',
+    imgUrl('/assets/img/product-crystal-1.jpg'),
     'https://lh3.googleusercontent.com/d/1YmyZ2mTpPoj7lvkVftKcn7hICwAttMC6',
     'https://lh3.googleusercontent.com/d/1x2TycGVMflmXv92kpVoFuPPI-OQb9CuY',
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR'
   ],
   'saraswati-yantra': [
-    'https://lh3.googleusercontent.com/d/1dL9rmIG6dcsQ4ICB_BPX2kyOaPk0JPtv',
+    imgUrl('/assets/img/product-2.jpg'),
     'https://lh3.googleusercontent.com/d/1IQynURnLVBUAhtakk9VDVrsP_a5Ni2Pc',
     'https://lh3.googleusercontent.com/d/1tRqSAchjv0PJ_M19gVBjyygTceYdi8kW',
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR'
   ],
   'surya-pyra-yantra': [
-    'https://lh3.googleusercontent.com/d/18oI9OUqPlwxQDii0SxWd9Byjf7Xaqq_7',
-    'https://lh3.googleusercontent.com/d/1PpZyqI7q5mtXkLQiTujf_dmC6k6vggS1',
+    imgUrl('/assets/img/product-yantra-1.jpg'),
+    imgUrl('/assets/img/product-vastu-1.jpg'),
     'https://lh3.googleusercontent.com/d/12UyKiXog-ulOs2Fk3lL_J0i-h-9btNLe',
     'https://lh3.googleusercontent.com/d/1HaECHyqDsi4u3HgQ2aQddmqYi7BMqx7p'
   ],
@@ -295,23 +298,23 @@ const PRODUCT_GALLERIES: Record<string, string[]> = {
     'https://lh3.googleusercontent.com/d/1HaECHyqDsi4u3HgQ2aQddmqYi7BMqx7p'
   ],
   'crystal-bracelet': [
-    'https://lh3.googleusercontent.com/d/1w_vJONo8RfWgo-rdBaPCBzHZwRz84Vzn',
+    imgUrl('/assets/img/product-3.jpg'),
     'https://lh3.googleusercontent.com/d/1ZFXYUYT3tSieHypiCYfs3Bo9f48rF2sX',
     'https://lh3.googleusercontent.com/d/1xFFmrjDujtaZvjxV5loG52cuYGsOzxwn',
     'https://lh3.googleusercontent.com/d/1SCQk9P6Ox1RCkKjYMnEcbct_jsHUpnQN'
   ],
   'wood-crystal-bracelet': [
-    'https://lh3.googleusercontent.com/d/1HxGOgrqj6E2Uc7z2EC6hKXzZeM6hoBFX',
+    imgUrl('/assets/img/product-4.jpg'),
     'https://lh3.googleusercontent.com/d/1gIbEAo4N_VrCyIfRla69OT5HmJ8Js7ys',
     'https://lh3.googleusercontent.com/d/1J3IGWqNewiNRP_HqHGQlkNreKMHTjMBz',
     'https://lh3.googleusercontent.com/d/1S_gLEjsYW0sW2p105nKeERMCSMVoNQfj'
   ],
   'vastu-crystal-set': [
-    'https://lh3.googleusercontent.com/d/1NcGEeoddDjsl9XPyo5cqIcwTMM6fdJuC',
+    imgUrl('/assets/img/product-5.jpg'),
     'https://lh3.googleusercontent.com/d/1RSFxLvpr-v4seP6-lQN1lHSnmKgnFTib'
   ],
   'vastu-copper-helix': [
-    'https://lh3.googleusercontent.com/d/16PaRL-J3cJ9NYytzyvEdROAnyKBmYknm',
+    imgUrl('/assets/img/product-6.jpg'),
     'https://lh3.googleusercontent.com/d/1E5p9HiMuYQ3mnaa3WYltA9T6Ku-goRP5'
   ]
 };
@@ -337,9 +340,27 @@ export default function Products() {
     }
   }, [location.search]);
 
+  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<string>('Default');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Delivery addresses
+  interface DeliveryAddress { id: string; name: string; phone: string; address: string; }
+  const [deliveryAddresses, setDeliveryAddresses] = useState<DeliveryAddress[]>([]);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [newAddress, setNewAddress] = useState({ name: '', phone: '', address: '' });
+
+  const addAddress = () => {
+    if (!newAddress.name.trim() || !newAddress.address.trim()) return;
+    setDeliveryAddresses(prev => [...prev, { ...newAddress, id: Date.now().toString() }]);
+    setNewAddress({ name: '', phone: '', address: '' });
+    setShowAddressForm(false);
+  };
+
+  const removeAddress = (id: string) => {
+    setDeliveryAddresses(prev => prev.filter(a => a.id !== id));
+  };
   const [showHtmlCodeModal, setShowHtmlCodeModal] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [addedNotification, setAddedNotification] = useState<string | null>(null);
@@ -359,10 +380,10 @@ export default function Products() {
 
   const getGalleryImages = (id: string): string[] => {
     return PRODUCT_GALLERIES[id] || [
-      'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500',
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500',
-      'https://images.unsplash.com/photo-1620121692029-d088224ddc74?w=500',
-      'https://images.unsplash.com/photo-1508189860359-777d945909ef?w=500'
+      imgUrl('/assets/img/product-yantra-2.jpg'),
+      imgUrl('/assets/img/product-yantra-3.jpg'),
+      imgUrl('/assets/img/product-yantra-4.jpg'),
+      imgUrl('/assets/img/product-yantra-5.jpg')
     ];
   };
 
@@ -469,14 +490,20 @@ export default function Products() {
 
   // Handle WhatsApp Checkout
   const handleCheckoutWhatsApp = () => {
-    const phone = BRAND_DATA.phone.replace(/[^0-9]/g, '') || '919845012345'; // fallback if needed
+    const phone = BRAND_DATA.phone.replace(/[^0-9]/g, '') || '919845012345';
     const introText = `Hello Destiny Numbers, I would like to order the following sacred products:\n\n`;
-    const itemsText = cart.map((item, index) => {
-      return `${index + 1}. ${item.product.name} (x${item.quantity}) — ₹${(item.product.price * item.quantity).toLocaleString('en-IN')}`;
-    }).join('\n');
-    
-    const finalTotalText = `\n\nTotal Cart Value: ₹${cartTotal.toLocaleString('en-IN')}\n\nThank you! Please share payment and delivery details.`;
-    const fullMessage = encodeURIComponent(introText + itemsText + finalTotalText);
+    const itemsText = cart.map((item, index) =>
+      `${index + 1}. ${item.product.name} (x${item.quantity}) — ₹${(item.product.price * item.quantity).toLocaleString('en-IN')}`
+    ).join('\n');
+
+    const addressText = deliveryAddresses.length > 0
+      ? `\n\n📦 Delivery Address(es):\n` + deliveryAddresses.map((a, i) =>
+          `${i + 1}. ${a.name}${a.phone ? ` | ${a.phone}` : ''}\n   ${a.address}`
+        ).join('\n')
+      : `\n\nPlease share delivery address and payment details.`;
+
+    const totalText = `\n\nTotal Cart Value: ₹${cartTotal.toLocaleString('en-IN')}${addressText}\n\nThank you!`;
+    const fullMessage = encodeURIComponent(introText + itemsText + totalText);
     window.open(`https://wa.me/${phone}?text=${fullMessage}`, '_blank');
   };
 
@@ -698,18 +725,18 @@ export default function Products() {
   <script>
     // Live product database
     const PRODUCTS = [
-      { id: '1', name: 'Surya Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Gold-plated solar grid for solar activation, leadership, vitality, and authority.', rating: 4.9, image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500' },
-      { id: '2', name: 'Budh Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Sacred matrix for Mercury (Budha) to enhance intellect, business decisions, and trade growth.', rating: 4.8, image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500' },
-      { id: '3', name: 'Budh-Pyra Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Pyramid-amplified Mercury grid for rapid analytical clarity, professional focus, and commerce.', rating: 4.9, image: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?w=500' },
-      { id: '4', name: 'Pyra Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Multi-layered pyramid geometry plate matching prime cosmic frequencies for environmental balance.', rating: 4.7, image: 'https://images.unsplash.com/photo-1508189860359-777d945909ef?w=500' },
-      { id: '5', name: 'Gayatri Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Supreme radiant grid invoking divine light, spiritual expansion, clear consciousness, and block removal.', rating: 5.0, image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=500' },
-      { id: '6', name: 'Saraswati Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Refined geometric plate for concentration, artistic mastery, academics, and divine creative wisdom.', rating: 4.9, image: 'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=500' },
-      { id: '7', name: 'Surya-Pyra Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Pyramid solar grid creating accelerated energy amplification for business prestige and physical strength.', rating: 4.9, image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=500' },
-      { id: '8', name: 'Surya-Budh Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Budhaditya combination grid that balances logic and action. Triggers profound executive success.', rating: 5.0, image: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=500' },
-      { id: '9', name: 'Crystal Bracelet', category: 'Bracelets', categories: ['Bracelets', 'Crystals'], price: 600, description: 'Premium amethyst and quartz crystal beads tuned to clear energetic blockages and restore calm focus.', rating: 4.8, image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=500' },
-      { id: '10', name: 'Wood Crystal Bracelet', category: 'Bracelets', categories: ['Bracelets'], price: 500, description: "Natural aromatic sandalwood beads matched with genuine Tiger's Eye for deep grounding and shield protection.", rating: 4.7, image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=500' },
-      { id: '11', name: 'Max Pyramid', category: 'Vastu', categories: ['Vastu'], price: 6000, description: 'Maximum pyramid energy for home, office, and meditation spaces.', rating: 4.9, image: 'https://lh3.googleusercontent.com/d/1NcGEeoddDjsl9XPyo5cqIcwTMM6fdJuC' },
-      { id: '12', name: 'Navratna for Vastu', subtitle: 'Navarathna Set Box for Bhoomi Pooja & Good Vastu | 7×5 mm', category: 'Vastu', categories: ['Vastu'], price: 2500, description: 'Nine planets. One foundation. A lifetime of cosmic harmony.', rating: 4.8, image: 'https://lh3.googleusercontent.com/d/16PaRL-J3cJ9NYytzyvEdROAnyKBmYknm' }
+      { id: '1', name: 'Surya Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Gold-plated solar grid for solar activation, leadership, vitality, and authority.', rating: 4.9, image: imgUrl('/assets/img/products/surya-yantra.jpg') },
+      { id: '2', name: 'Budh Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Sacred matrix for Mercury (Budha) to enhance intellect, business decisions, and trade growth.', rating: 4.8, image: imgUrl('/assets/img/products/budh-yantra.jpg') },
+      { id: '3', name: 'Budh-Pyra Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Pyramid-amplified Mercury grid for rapid analytical clarity, professional focus, and commerce.', rating: 4.9, image: imgUrl('/assets/img/products/budh-pyra-yantra.jpg') },
+      { id: '4', name: 'Pyra Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Multi-layered pyramid geometry plate matching prime cosmic frequencies for environmental balance.', rating: 4.7, image: imgUrl('/assets/img/products/pyra-yantra.jpg') },
+      { id: '5', name: 'Gayatri Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Supreme radiant grid invoking divine light, spiritual expansion, clear consciousness, and block removal.', rating: 5.0, image: imgUrl('/assets/img/products/gayatri-yantra.jpg') },
+      { id: '6', name: 'Saraswati Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Refined geometric plate for concentration, artistic mastery, academics, and divine creative wisdom.', rating: 4.9, image: imgUrl('/assets/img/products/saraswati-yantra.jpg') },
+      { id: '7', name: 'Surya-Pyra Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Pyramid solar grid creating accelerated energy amplification for business prestige and physical strength.', rating: 4.9, image: imgUrl('/assets/img/products/surya-pyra-yantra.jpg') },
+      { id: '8', name: 'Surya-Budh Yantra', category: 'Yantras', categories: ['Yantras'], price: 7999, description: 'Budhaditya combination grid that balances logic and action. Triggers profound executive success.', rating: 5.0, image: imgUrl('/assets/img/products/surya-budh-yantra.jpg') },
+      { id: '9', name: 'Crystal Bracelet', category: 'Bracelets', categories: ['Bracelets', 'Crystals'], price: 600, description: 'Premium amethyst and quartz crystal beads tuned to clear energetic blockages and restore calm focus.', rating: 4.8, image: imgUrl('/assets/img/products/crystal-bracelet.jpg') },
+      { id: '10', name: 'Wood Crystal Bracelet', category: 'Bracelets', categories: ['Bracelets'], price: 500, description: "Natural aromatic sandalwood beads matched with genuine Tiger's Eye for deep grounding and shield protection.", rating: 4.7, image: imgUrl('/assets/img/products/wood-crystal-bracelet.jpg') },
+      { id: '11', name: 'Max Pyramid', category: 'Vastu', categories: ['Vastu'], price: 6000, description: 'Maximum pyramid energy for home, office, and meditation spaces.', rating: 4.9, image: imgUrl('/assets/img/products/max-pyramid.webp') },
+      { id: '12', name: 'Navratna for Vastu', subtitle: 'Navarathna Set Box for Bhoomi Pooja & Good Vastu | 7×5 mm', category: 'Vastu', categories: ['Vastu'], price: 2500, description: 'Nine planets. One foundation. A lifetime of cosmic harmony.', rating: 4.8, image: imgUrl('/assets/img/products/navratna-vastu.jpg') }
     ];
 
     let currentCategory = 'All';
@@ -968,22 +995,6 @@ export default function Products() {
 
       <div className="max-w-[1140px] mx-auto px-6 py-12">
         
-        {/* Title Area and Developer Integrator Ribbon */}
-        <div className="flex flex-col md:flex-row justify-between items-center border border-dashed border-[#C9A84C]/30 bg-white/40 p-4 mb-10 gap-4">
-          <div className="flex items-center gap-2.5 text-xs text-[#1C3557]/80">
-            <Info className="w-4 h-4 text-[#C9A84C] flex-shrink-0" />
-            <span className="italic leading-normal">
-              Need to host this on a different domain or server? Click to get the completely self-contained static HTML version!
-            </span>
-          </div>
-          <button 
-            id="btn-get-static-html"
-            onClick={() => setShowHtmlCodeModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#1C3557] text-white hover:bg-[#1C3557]/90 text-[10px] tracking-widest uppercase font-bold transition-all"
-          >
-            <FileCode className="w-3.5 h-3.5 text-[#C9A84C]" /> Get Standalone HTML
-          </button>
-        </div>
 
         {/* Controls Bar: Category Filters & Responsive Sorting & Counts */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 pb-6 border-b border-[#E8E2D8] text-sm font-sans" id="products-controls-panel">
@@ -1028,7 +1039,7 @@ export default function Products() {
 
             {/* Cart icon button */}
             <button
-              onClick={() => setIsCartOpen(true)}
+              onClick={() => navigate('/checkout')}
               className="relative flex items-center gap-2 px-3 py-1.5 bg-[#1C3557] hover:bg-[#12284c] text-white transition-colors border border-[#1C3557]"
               style={{ borderRadius: '0px' }}
               id="navbar-cart-btn"
@@ -1154,7 +1165,7 @@ export default function Products() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            onClick={() => setIsCartOpen(true)}
+            onClick={() => navigate('/checkout')}
             className="fixed bottom-24 right-8 z-40 bg-[#1C3557] hover:bg-[#1C3557]/90 text-white w-14 h-14 flex items-center justify-center shadow-2xl relative border-2 border-[#C9A84C]"
             style={{ borderRadius: '0px' }}
             id="floating-cart-trigger-btn"
@@ -1302,13 +1313,116 @@ export default function Products() {
                     <span className="text-lg font-bold text-[#C9A84C]">₹{cartTotal.toLocaleString('en-IN')}</span>
                   </div>
 
+                  {/* Delivery Addresses */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-[#1C3557] uppercase tracking-widest flex items-center gap-1">
+                        <Home className="w-3 h-3 text-[#C9A84C]" /> Delivery Address
+                      </span>
+                      <button
+                        onClick={() => setShowAddressForm(v => !v)}
+                        className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#C9A84C] hover:text-[#1C3557] transition-colors"
+                      >
+                        <Plus className="w-3 h-3" /> Add
+                      </button>
+                    </div>
+
+                    {/* Saved addresses list */}
+                    {deliveryAddresses.length > 0 && (
+                      <div className="space-y-1.5">
+                        {deliveryAddresses.map((a, i) => (
+                          <div key={a.id} className="flex items-start gap-2 bg-[#F5ECD7]/60 border border-[#E8E2D8] p-2">
+                            <MapPin className="w-3 h-3 text-[#C9A84C] mt-0.5 flex-shrink-0" />
+                            <div className="flex-grow min-w-0">
+                              <p className="text-[10px] font-bold text-[#1C3557]">{i + 1}. {a.name}{a.phone && ` · ${a.phone}`}</p>
+                              <p className="text-[9px] text-[#1C3557]/60 leading-snug">{a.address}</p>
+                            </div>
+                            <button onClick={() => removeAddress(a.id)} className="text-[#1C3557]/30 hover:text-red-500 transition-colors flex-shrink-0">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add address form */}
+                    <AnimatePresence>
+                      {showAddressForm && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border border-[#C9A84C]/40 bg-white p-3 space-y-2 mt-1">
+                            <input
+                              type="text"
+                              placeholder="Recipient Name *"
+                              value={newAddress.name}
+                              onChange={e => setNewAddress(p => ({ ...p, name: e.target.value }))}
+                              className="w-full border border-[#E8E2D8] px-3 py-2 text-[11px] text-[#1C3557] outline-none focus:border-[#C9A84C] transition-colors"
+                            />
+                            <input
+                              type="tel"
+                              placeholder="Phone Number"
+                              value={newAddress.phone}
+                              onChange={e => setNewAddress(p => ({ ...p, phone: e.target.value }))}
+                              className="w-full border border-[#E8E2D8] px-3 py-2 text-[11px] text-[#1C3557] outline-none focus:border-[#C9A84C] transition-colors"
+                            />
+                            <textarea
+                              placeholder="Full Delivery Address *"
+                              value={newAddress.address}
+                              onChange={e => setNewAddress(p => ({ ...p, address: e.target.value }))}
+                              rows={2}
+                              className="w-full border border-[#E8E2D8] px-3 py-2 text-[11px] text-[#1C3557] outline-none focus:border-[#C9A84C] transition-colors resize-none"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                onClick={addAddress}
+                                disabled={!newAddress.name.trim() || !newAddress.address.trim()}
+                                className="flex-1 py-2 bg-[#1C3557] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#12284c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                Save Address
+                              </button>
+                              <button
+                                onClick={() => { setShowAddressForm(false); setNewAddress({ name: '', phone: '', address: '' }); }}
+                                className="px-3 py-2 border border-[#E8E2D8] text-[#1C3557]/50 text-[10px] font-bold hover:text-[#1C3557] transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   <button
                     onClick={handleCheckoutWhatsApp}
                     className="w-full py-4 bg-[#1C3557] text-white hover:bg-[#1C3557]/95 transition-all flex items-center justify-center gap-3 font-display font-medium text-xs tracking-widest uppercase leading-none"
                     style={{ borderRadius: '0px' }}
                   >
-                    🚀 Coordinate Order via WhatsApp
+                    Coordinate Order via WhatsApp
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#25D366] flex-shrink-0">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.854L.057 23.57a.5.5 0 0 0 .611.624l5.906-1.498A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.9 9.9 0 0 1-5.031-1.374l-.36-.214-3.733.947.993-3.62-.235-.374A9.862 9.862 0 0 1 2.1 12C2.1 6.533 6.533 2.1 12 2.1c5.466 0 9.9 4.433 9.9 9.9 0 5.466-4.434 9.9-9.9 9.9z"/>
+                    </svg>
                   </button>
+
+                  {/* Chat with us */}
+                  <a
+                    href={`https://wa.me/${BRAND_DATA.phone.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3 bg-[#25D366] text-white hover:bg-[#20b858] transition-all flex items-center justify-center gap-3 font-sans font-bold text-[11px] tracking-widest uppercase"
+                    style={{ borderRadius: '0px' }}
+                  >
+                    Chat with us
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 flex-shrink-0">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.854L.057 23.57a.5.5 0 0 0 .611.624l5.906-1.498A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.9 9.9 0 0 1-5.031-1.374l-.36-.214-3.733.947.993-3.62-.235-.374A9.862 9.862 0 0 1 2.1 12C2.1 6.533 6.533 2.1 12 2.1c5.466 0 9.9 4.433 9.9 9.9 0 5.466-4.434 9.9-9.9 9.9z"/>
+                    </svg>
+                  </a>
                 </div>
               )}
             </motion.div>

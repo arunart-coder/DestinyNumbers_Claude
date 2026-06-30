@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, MessageCircle, Phone, MapPin, Clock, ChevronDown, ChevronRight } from 'lucide-react';
 import { useCMS } from '../context/CMSContext';
 import { SOCIAL_LINKS, BRAND_DATA } from '../lib/constants';
-import { cn } from '../lib/utils';
+import { cn, imgUrl } from '../lib/utils'; import { imgUrl } from '../lib/utils';
 
 function TopBand() {
   return (
@@ -128,7 +128,7 @@ export function Navbar() {
         <div className="max-w-[1140px] mx-auto px-6 h-full flex items-center justify-between">
           <Link to="/" className="flex items-center justify-center group h-full py-1">
             <img 
-              src="https://lh3.googleusercontent.com/d/1atXDC8DTkr-j6O_TPKReGttfWN1kvcjW" 
+              src={imgUrl('/assets/img/navbar-logo-main.jpg')}
               alt="Destiny Numbers Logo" 
               className="h-[52px] md:h-[60px] w-auto object-contain"
               referrerPolicy="no-referrer"
@@ -745,18 +745,5 @@ export function Footer() {
 }
 
 export function WhatsAppCTA() {
-  const whatsappNumber = BRAND_DATA.phone.replace(/[^0-9]/g, '');
-  return (
-    <a 
-      href={`https://wa.me/${whatsappNumber}`} 
-      target="_blank" 
-      rel="noreferrer"
-      className="fixed bottom-8 right-8 z-[60] w-14 h-14 bg-[#25D366] rounded-none flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer group"
-    >
-      <MessageCircle className="w-7 h-7 text-white fill-white/20" />
-      <span className="absolute right-full mr-4 bg-white text-black text-[10px] font-bold px-3 py-1 rounded-none whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-        Chat with us
-      </span>
-    </a>
-  );
+  return null;
 }

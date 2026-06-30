@@ -52,6 +52,7 @@ import IndustrialVastu from './pages/IndustrialVastu';
 import VastuCorrections from './pages/VastuCorrections';
 import WealthVastu from './pages/WealthVastu';
 import Products from './pages/Products';
+import Checkout from './pages/Checkout';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -102,6 +103,7 @@ export default function App() {
                   <Route path="/services/vastu-corrections" element={<VastuCorrections />} />
                   <Route path="/services/wealth-vastu" element={<WealthVastu />} />
                   <Route path="/products" element={<Products />} />
+                  <Route path="/checkout" element={<Checkout />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/tools" element={<ToolsPage />} />
                   <Route path="/about" element={<AboutPage />} />

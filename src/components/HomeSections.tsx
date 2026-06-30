@@ -22,7 +22,7 @@ import {
   SERVICES, COURSES, TESTIMONIALS, FAQ, BRAND_DATA, HERO_SLIDES 
 } from '../lib/constants';
 import { useBrand } from '../lib/BrandContext';
-import { cn } from '../lib/utils';
+import { cn, imgUrl } from '../lib/utils'; import { imgUrl } from '../lib/utils';
 import { Link } from 'react-router-dom';
 
 export function Hero() {
@@ -419,11 +419,11 @@ export function ToolsSection() {
        {/* Background Image Overlay */}
        <div className="absolute inset-0 opacity-10 pointer-events-none">
           <img 
-            src="https://lh3.googleusercontent.com/d/1uId_ZFDkU3pMdt7twbLd_brhx-GxL5Di" 
+            src={imgUrl('/assets/img/arun-profile.jpg')} 
             className="w-full h-full object-cover grayscale brightness-[0.2]"
             alt="Arun Poovaiah"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1502481851512-e9e2529bbbf9?auto=format&fit=crop&q=80&w=1920";
+              (e.target as HTMLImageElement).src = imgUrl('/assets/img/home-bg-vastu.jpg');
             }}
             referrerPolicy="no-referrer"
           />
@@ -668,9 +668,9 @@ export function AcademySection() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
              {COURSES.map((course, idx) => {
                 const courseImages = [
-                  "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=800",
-                  "https://images.unsplash.com/photo-1446064429943-23f9a07a8535?auto=format&fit=crop&q=80&w=800", 
-                  "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&q=80&w=800"
+                  imgUrl('/assets/img/svc-numerology-lg.jpg'),
+                  imgUrl('/assets/img/svc-tarot-2.jpg'), 
+                  imgUrl('/assets/img/svc-astrology-2.jpg')
                 ];
                 return (
                    <div key={course.id} className="relative group overflow-hidden rounded-[2rem] bg-white border border-royal-gold/10 shadow-2xl">
@@ -679,7 +679,7 @@ export function AcademySection() {
                        src={courseImages[idx % courseImages.length]} 
                        className="w-full h-[450px] object-cover grayscale opacity-40 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100"
                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&q=80&w=800&sig=${idx}`;
+                          (e.target as HTMLImageElement).src = `/assets/img/svc-astrology-2.jpg`;
                        }}
                        referrerPolicy="no-referrer"
                        alt={course.title}

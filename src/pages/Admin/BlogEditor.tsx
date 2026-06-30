@@ -1,3 +1,4 @@
+import { imgUrl } from '../../lib/utils';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -77,7 +78,7 @@ export default function BlogEditor() {
       updatedAt: new Date().toISOString(),
       publishDate: new Date().toISOString(),
       scheduledDate: null,
-      thumbnail: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=1200',
+      thumbnail: imgUrl('/assets/img/blog-default.jpg'),
       thumbnailAlt: '',
       thumbnailPosition: 'center',
       views: 0,

@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BRAND_DATA, SERVICES } from '../lib/constants';
-import { cn, formatImageUrl } from '../lib/utils';
+import { cn, formatImageUrl } from '../lib/utils'; import { imgUrl } from '../lib/utils';
 import { 
   calculateNameNumber, 
   calculateBhagyank, 
@@ -27,49 +27,49 @@ const TESTIMONIALS = [
     name: "Priyanka Prasaath",
     role: "Psychologist",
     quote: "I'd like to swear by his work , his astrological predictions are on point and without thinking twice I'd turn towards him for advice at any point in my life when the need be . He not only tells you things you want to hear but also things we have to work on to better ourselves .   It's been wonderful so far , thank you 🙏.",
-    image: "https://lh3.googleusercontent.com/d/1a2fidCSDP-jV0LpI-GkWfHUQkolV6LDt"
+    image: imgUrl('/assets/img/priyanka.jpg')
   },
   {
     name: "Linda Ibañez",
     role: "Chile-Argentina",
     quote: "Recomiendo en un 100%. La experiencia promete ser muy mística, pero no solo eso, descubres que dentro de tu vida hay situaciones que son muy marcadas por los designios con los que Dios te mandó y parte de eso es tu fecha de nacimiento lo cual es con los números que Dios decidió. Propongo descubran ustedes mísmos y se sorprenderán 🙂",
-    image: "https://lh3.googleusercontent.com/d/1AZkUG4DJP-jMMe030aaaCTGIrjj-vGIZ"
+    image: imgUrl('/assets/img/Linda.jpg')
   },
   {
     name: "Nidhi Shetty",
     role: "Educationist",
     quote: "Extremely knowledgeable! He has an explanation for everything. At times when I feel stuck Mr. Poovaiah is my goto person to contact for some clarity and solutions. His remedies work like magic.",
-    image: "https://lh3.googleusercontent.com/d/1nFq_hPmoknps0hid4h6H6HMlLzggkkFd"
+    image: imgUrl('/assets/img/nidhi.jpg')
   },
   {
     name: "Deepa S",
     role: "Engineer",
     quote: "My son's numerology number was given by him. I am satisfied with his calculation and prediction. and Life Prediction is very difficult, especially about the future but he predicted accurately and give me a solution too.",
-    image: "https://lh3.googleusercontent.com/d/10DCjcfIr6KWa9JNmw9UuwyECnOkNrV5G"
+    image: imgUrl('/assets/img/deepa.jpg')
   },
   {
     name: "Pramita",
     role: "Entrepreneur",
     quote: "You are blessing of God in my life. I would like to tell you sir you are mismerising by your words and action. I appreciate you getting in touch with me and helping me out. I think that was necessary. I ll be able to understand the situation more clearly as a result of this. I m glad I have this knowledge. Thank you sir for your wisdom, generous, overwhelming behavior. I would love to give 10 star.....",
-    image: "https://lh3.googleusercontent.com/d/1z1IU8P88ZUvP6oUBfO84ETLLbFT5Z6bO"
+    image: imgUrl('/assets/img/pramita.jpg')
   },
   {
     name: "Surabhi",
     role: "Home Maker",
     quote: "He was the best astrologer I have spoken with; he was so perfect with my analysis. Thankful to you, sir. Definitely, I suggest everyone reach out to him.",
-    image: "https://lh3.googleusercontent.com/d/1h7J_NOi3Erg3nSM4osxabSd_SnDURuCF"
+    image: imgUrl('/assets/img/surabhi.jpg')
   },
   {
     name: "Dr. Dhanya",
     role: "Doctor",
     quote: "Very knowledgeable. Answering to the point, not beating around the bush, easy remedies, highly recommended",
-    image: "https://lh3.googleusercontent.com/d/1es1UfeSFgc7YM1QijM0rZTpabHvpFs3j"
+    image: imgUrl('/assets/img/Dr.Dhanya.jpg')
   },
   {
     name: "Rashmika A",
     role: "IT Manager",
     quote: "Thank you so much sir for the wonderful session regarding my marriage and love relationship.superbbb accuracy of my present life Thank you so very much",
-    image: "https://lh3.googleusercontent.com/d/1M6MF3t1Y5C16GsoRyxLxaqQJCVQjSeWU"
+    image: imgUrl('/assets/img/ras.png')
   }
 ];
 
@@ -101,7 +101,7 @@ export default function Home() {
     {
       title: "Decode Your Destiny",
       desc: "Expert Numerology, Astrology & Vastu Consultations trusted by 5,000+ global seekers.",
-      bgImage: "https://lh3.googleusercontent.com/d/1SqXM-UhFWzmPiSLOBaVAuKABHa-HkvlI",
+      bgImage: imgUrl('/assets/img/home-bg-1.jpg'),
       buttons: [
         { text: "Unlock Your Destiny", path: "/consultation", primary: true },
         { text: "Find your destiny number", path: "/calculator", primary: false }
@@ -110,7 +110,7 @@ export default function Home() {
     {
       title: "Align with the Stars",
       desc: "Discover how celestial movements shape your personal and professional journey.",
-      bgImage: "https://lh3.googleusercontent.com/d/1wDEAUYgLjDFdG7Mvyag-9KZG-hPW7Fxc",
+      bgImage: imgUrl('/assets/img/slide-astrology-1.jpg'),
       buttons: [
         { text: "Discover Your Insight", path: "/tools", primary: true },
         { text: "Speak to an Expert", path: "/consultation", primary: false }
@@ -119,7 +119,7 @@ export default function Home() {
     {
       title: "Harmonize Your Space",
       desc: "Transform your environment into a sanctuary of energy, prosperity, and peace.",
-      bgImage: "https://lh3.googleusercontent.com/d/1ue_4vsaU6aoWRnOXxjq3rYp_FoTYzuUd",
+      bgImage: imgUrl('/assets/img/slide-astrology-2.jpg'),
       buttons: [
         { text: "Get Expert Insight", path: "/consultation", primary: true }
       ]
@@ -618,7 +618,7 @@ export default function Home() {
                         referrerPolicy="no-referrer"
                         onError={(e) => {
                           e.currentTarget.onerror = null;
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop";
+                          e.currentTarget.src = imgUrl('/assets/img/testimonial-male.jpg');
                         }}
                       />
                     </div>

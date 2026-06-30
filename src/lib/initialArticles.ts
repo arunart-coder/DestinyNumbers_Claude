@@ -1,9 +1,10 @@
+import { imgUrl } from './utils';
 import { BlogPost } from '../types/blog';
 
 const defaultAuthor = {
   name: 'Dr. Arun Poovaiah',
   role: 'Master Numerologist',
-  avatar: 'https://lh3.googleusercontent.com/d/1uId_ZFDkU3pMdt7twbLd_brhx-GxL5Di',
+  avatar: imgUrl('/assets/img/arun-profile.jpg'),
   bio: 'Expert with 15+ years experience in Cosmic Vibrations.'
 };
 
@@ -50,7 +51,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p><strong>Would you like to know the best mobile number for your birth date?</strong></p>
     `,
     excerpt: 'In the digital age, your mobile number is your primary frequency. Learn how your digits influence resonance.',
-    thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=1200',
+    thumbnail: imgUrl('/assets/img/blog-numerology.jpg'),
     thumbnailAlt: 'Digital energy signature visualization',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -180,7 +181,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       </p>
     `,
     excerpt: "The number on your business name is not neutral. It is either working for you or against you — discover how numerology quietly determines business success.",
-    thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200',
+    thumbnail: imgUrl('/assets/img/blog-business.jpg'),
     thumbnailAlt: 'Corporate business growth analysis and charts',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -326,7 +327,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p class="text-warm-accent font-bold">📞 +91 89712 25552 | 📧 support@destinynumber.in</p>
     `,
     excerpt: 'Discover how Vastu Shastra applies to modern homes — the science behind directions, five elements, and room placement for health, harmony, and prosperity.',
-    thumbnail: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=1200',
+    thumbnail: imgUrl('/assets/img/blog-home.jpg'),
     thumbnailAlt: 'Modern minimalist house interior',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -444,7 +445,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       A: Your best colors are Gold, Orange, and Bright Red.</p>
     `,
     excerpt: 'Have you ever felt like you were born to lead, even when nobody asked you to? Explore the primal vibration of Driver Number 1.',
-    thumbnail: 'https://drive.google.com/file/d/1lZgTFx9x1WcXA6h6jJDacNC1871Q8g2R/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-numerology.jpg'),
     thumbnailAlt: 'Driver Number 1 Sun leadership visualization',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -558,7 +559,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       A: Your best colors are White, Silver, Cream, and Light Blue.</p>
     `,
     excerpt: 'Deeply intuitive and peace-loving? Explore the Moon-led vibration of Driver Number 2 and its profound influence on empathy and collaboration.',
-    thumbnail: 'https://drive.google.com/file/d/1gnlY_w_beDDexJ0RZvoR-vhizF941vZV/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-business.jpg'),
     thumbnailAlt: 'Driver Number 2 Moon-led visual',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -660,7 +661,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Have you ever noticed that you are the life of the party, even when you aren’t trying to be? Explore the vibrant, Jupiter-led power of Driver Number 3.',
-    thumbnail: 'https://drive.google.com/file/d/1zZxgO_tojdV6DTUMJdJ8yRaOcHI3td2S/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-home.jpg'),
     thumbnailAlt: 'Driver Number 3 Joyful Expression',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -744,7 +745,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Logical, analytical, and ready to build legacy? Discover the powerful, Rahu-governed vibration of Driver Number 4 and its impact on structure and sudden changes.',
-    thumbnail: 'https://drive.google.com/file/d/1-4AdWH2MOTIfqHfC0m5lY8NqEPOlsf2f/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-4.jpg'),
     thumbnailAlt: 'Driver Number 4 Practical Visionary',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -827,7 +828,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Have you ever felt like you have "itchy feet" and a mind that just won\'t stop racing? Explore the dynamic, Mercury-led power of Driver Number 5.',
-    thumbnail: 'https://drive.google.com/file/d/1CA_q0fBldH1zfLpQHDILhOUXqtba4MFa/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-5.jpg'),
     thumbnailAlt: 'Driver Number 5 Versatile Explorer',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -910,7 +911,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Have you ever felt like you are the "glue" that holds your family together? Explore the beautiful and magnetic vibration of Driver Number 6.',
-    thumbnail: 'https://drive.google.com/file/d/1Ypnn6AZdZjOZ1aNjJzRKn_-BPHveC41T/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-6.jpg'),
     thumbnailAlt: 'Driver Number 6 Harmonic Nurturer',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -993,7 +994,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Have you ever felt like you are an "old soul" in a world that is moving too fast? Explore the deep, introspective Ketu-led power of Driver Number 7.',
-    thumbnail: 'https://drive.google.com/file/d/1tZ3pnDObvXAsfNI9Rh7fUGi9LUDJAcyB/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-7.jpg'),
     thumbnailAlt: 'Driver Number 7 Mystical Seeker',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -1076,7 +1077,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Have you ever felt like life is a constant uphill climb, but one that you have the strength to win? Explore the powerful, Saturn-ruled vibration of Driver Number 8.',
-    thumbnail: 'https://drive.google.com/file/d/1IBkdUmdhjz4kn63Mjp6ygLHlziR32YfP/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-8.jpg'),
     thumbnailAlt: 'Driver Number 8 Master of Material',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -1158,7 +1159,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your numbers are not your limit — they are your launchpad. To get your complete personal numerology reading and discover what your full chart reveals, connect with Destiny Numbers today. Your destiny is waiting.</p>
     `,
     excerpt: 'Have you ever felt like you are here to save the world, even in small ways? Explore the powerful and compassionate vibration of Driver Number 9.',
-    thumbnail: 'https://drive.google.com/file/d/1rb2NSBqyfgmcr0tuM3ojIQdffd2kzER-/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-9.jpg'),
     thumbnailAlt: 'Driver Number 9 Humanitarian Warrior',
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -1381,7 +1382,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       A: North — specifically the N3 (Mukhya) zone — is considered the single most auspicious entrance position in Vastu Shastra, delivering wealth, prosperity, and remarkable growth. East is the second most naturally supportive direction, with E3 (Jayanta) and E4 (Indra) being highly beneficial. However, any direction has its auspicious zones — the question is always about which specific zone within the direction, not the direction alone.</p>
     `,
     excerpt: "Learn how the ancient science of Pada Vastu divides your home's perimeter into 32 main entrance options, dictating cosmic flow, wellness, and fortune.",
-    thumbnail: 'https://images.unsplash.com/photo-1660724025443-5e5184479356?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    thumbnail: imgUrl('/assets/img/blog-vastu.jpg'),
     thumbnailAlt: "Spacious house entrance representing Vastu principles",
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -1580,7 +1581,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       </ul>
     `,
     excerpt: "Have you ever walked into someone's home and felt an instant, comforting warmth? That is Griha Pravesh. Explore the 3 types of home entry, auspicious months, step-by-step rituals, and individual numerology.",
-    thumbnail: 'https://drive.google.com/file/d/1WbHKCA_AaxidnOeBEAfZcr_vMQupr0d0/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-10.jpg'),
     thumbnailAlt: "Serene lit candles and bright warm home interior welcoming positivity",
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -1771,7 +1772,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       </ul>
     `,
     excerpt: "Where is your kitchen situated? Discover the direction-by-direction Vastu guidelines for placing the critical element of fire to unlock good health and financial abundance.",
-    thumbnail: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=1200',
+    thumbnail: imgUrl('/assets/img/blog-reiki.jpg'),
     thumbnailAlt: "A beautiful, airy modern kitchen aligned with positive energy patterns",
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -1999,7 +2000,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>Your bedroom should be your greatest sanctuary — a space that replenishes you, supports your ambitions, and deepens your relationships. With the right Vastu guidance, you can transform your bedroom into a powerful energy zone that works for you every single night.</p>
     `,
     excerpt: "We spend one-third of our lives in the bedroom. Find out how its directional placement shapes restfulness, metabolic health, marital happiness, and career luck.",
-    thumbnail: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&q=80&w=1200',
+    thumbnail: imgUrl('/assets/img/blog-crystal.jpg'),
     thumbnailAlt: "A peaceful master bedroom designed using warm, calming tones and natural elements",
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -2221,7 +2222,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       Check with our experts about the direction and orientation of your staircase today.</p>
     `,
     excerpt: "Every step connects floors, but also affects your life path. Discover the Vastu directions for staircases, clockwise rotation rules, and central Brahmasthan warnings.",
-    thumbnail: 'https://drive.google.com/file/d/1zZQzMjmG7o_yPn7dnhkpihSFB89cNHUW/view?usp=drive_link',
+    thumbnail: imgUrl('/assets/img/blog-thumb-11.jpg'),
     thumbnailAlt: "An elegant, structurally sound modern staircase with clean, ascending energy lines",
     thumbnailPosition: 'hero',
     author: defaultAuthor,
@@ -2306,7 +2307,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       <p>At <strong>Destiny Numbers</strong> in Bengaluru, our Vastu experts offer personalised consultations — whether you are planning a new construction, renovating, or looking to remedy energy imbalances in your current home. We combine Vastu analysis with Numerology and Astrology to give you a complete picture of your living space.</p>
     `,
     excerpt: "Even a small structural element like a toilet can silently influence your path. Learn the Vastu directions, disposal zones, and essential rules for toilets.",
-    thumbnail: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200',
+    thumbnail: imgUrl('/assets/img/blog-career.jpg'),
     thumbnailAlt: "A clean, modern bathroom interior styled perfectly as per directional Vastu guidelines",
     thumbnailPosition: 'hero',
     author: defaultAuthor,

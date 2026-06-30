@@ -1,3 +1,4 @@
+import { imgUrl } from './utils';
 import { 
   Hash, Smartphone, Type, Building2, Star, Compass, 
   Moon, Eye, Gem, Watch, PenTool, Flame, Zap, 
@@ -319,49 +320,49 @@ export const TESTIMONIALS = [
     name: 'Linda Ibañez',
     role: 'Chile-Argentina',
     content: 'Recomiendo en un 100%. La experiencia promete ser muy mística, pero no solo eso, descubres que dentro de tu vida hay situaciones que son muy marcadas por los designios con los que Dios te mandó y parte de eso es tu fecha de nacimiento lo cual es con los números que Dios decidió. Propongo descubran ustedes mísmos y se sorprenderán 🙂',
-    avatar: '/assets/img/Linda.jpg'
+    avatar: imgUrl('/assets/img/Linda.jpg')
   },
   {
     name: 'Pramita',
     role: 'Entrepreneur',
     content: 'You are blessing of God in my life. I would like to tell you sir you are mismerising by your words and action. I appreciate you getting in touch with me and helping me out. I think that was necessary. I ll be able to understand the situation more clearly as a result of this. I m glad I have this knowledge. Thank you sir for your wisdom, generous, overwhelming behavior. I would love to give 10 star.....',
-    avatar: '/assets/img/pramita.jpg'
+    avatar: imgUrl('/assets/img/pramita.jpg')
   },
   {
     name: 'Nidhi Shetty',
     role: 'Educationist',
     content: 'Extremely knowledgeable! He has an explanation for everything. At times when I feel stuck Mr. Poovaiah is my goto person to contact for some clarity and solutions. His remedies work like magic.',
-    avatar: '/assets/img/nidhi.jpg'
+    avatar: imgUrl('/assets/img/nidhi.jpg')
   },
   {
     name: 'Deepa S',
     role: 'Engineer',
     content: "My son's numerology number was given by him. I am satisfied with his calculation and prediction. and Life Prediction is very difficult, especially about the future but he predicted accurately and give me a solution too.",
-    avatar: '/assets/img/deepa.jpg'
+    avatar: imgUrl('/assets/img/deepa.jpg')
   },
   {
     name: 'Priyanka Prasaath',
     role: 'Psychologist',
     content: "I'd like to swear by his work , his astrological predictions are on point and without thinking twice I'd turn towards him for advice at any point in my life when the need be . He not only tells you things you want to hear but also things we have to work on to better ourselves .   It's been wonderful so far , thank you 🙏.",
-    avatar: '/assets/img/priyanka.jpg'
+    avatar: imgUrl('/assets/img/priyanka.jpg')
   },
   {
     name: 'Surabhi',
     role: 'Home Maker',
     content: "He was the best astrologer I have spoken with; he was so perfect with my analysis. Thankful to you, sir. Definitely, I suggest everyone reach out to him.",
-    avatar: '/assets/img/surabhi.jpg'
+    avatar: imgUrl('/assets/img/surabhi.jpg')
   },
   {
     name: 'Dr. Dhanya',
     role: 'Doctor',
     content: "Very knowledgeable. Answering to the point, not beating around the bush, easy remedies, highly recommended",
-    avatar: '/assets/img/Dr.Dhanya.jpg'
+    avatar: imgUrl('/assets/img/Dr.Dhanya.jpg')
   },
   {
     name: 'Rashmika A',
     role: 'IT Manager',
     content: "Thank you so much sir for the wonderful session regarding my marriage and love relationship.superbbb accuracy of my present life Thank you so very much",
-    avatar: '/assets/img/ras.png'
+    avatar: imgUrl('/assets/img/ras.png')
   }
 ];
 
@@ -423,8 +424,8 @@ export const SERVICE_CATEGORIES = [
 export const BRAND_DATA = {
   name: "Arun Poovaiah",
   title: "Scientific Numerologist & Life Path Specialist",
-  profilePhoto: "https://lh3.googleusercontent.com/d/1uId_ZFDkU3pMdt7twbLd_brhx-GxL5Di",
-  fallbackPhoto: "https://images.unsplash.com/photo-1544168190-79c17527004f?auto=format&fit=crop&q=80&w=800",
+  profilePhoto: imgUrl('/assets/img/arun-profile.jpg'),
+  fallbackPhoto: imgUrl('/assets/img/fallback-photo.jpg'),
   email: "support@destinynumber.in",
   phone: "+91 74063 57511",
   location: "Bangalore, India",
@@ -443,7 +444,7 @@ export const HERO_SLIDES = [
     title: "Welcome to Destiny Numbers",
     subtitle: "Dare to Design Your Destiny.",
     description: "With Nadi and Numerology, the possibilities are endless! Unlock the deep wisdom within you and amplify your success.",
-    image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=1920",
+    image: imgUrl('/assets/img/hero-slide-1.jpg'),
     cta: "Begin Your Alignment",
     link: "/consultation"
   },
@@ -451,7 +452,7 @@ export const HERO_SLIDES = [
     title: "Vastu for Prosperity",
     subtitle: "Align Your Space with Abundance.",
     description: "Design your commercial and living environments using geographic and spiritual laws for lasting financial flow.",
-    image: "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&q=80&w=1920",
+    image: imgUrl('/assets/img/hero-slide-2.jpg'),
     cta: "Optimize Space",
     link: "/services"
   },
@@ -459,7 +460,7 @@ export const HERO_SLIDES = [
     title: "Wrist Watch Numerology",
     subtitle: "Fortune on Your Wrist.",
     description: "Right wrist watch will bring you fortune and abundance. Discover how your timepiece impacts your subconscious frequency.",
-    image: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&q=80&w=1920",
+    image: imgUrl('/assets/img/hero-slide-3.jpg'),
     cta: "Analyze My Watch",
     link: "/services/wrist-watch-analysis"
   },
@@ -467,7 +468,7 @@ export const HERO_SLIDES = [
     title: "Nakshatra Nadi Precision",
     subtitle: "Timing is The Ultimate Luxury.",
     description: "Not just what will happen, but exactly when. High-precision predictive astrology for life's most critical decisions.",
-    image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1920",
+    image: imgUrl('/assets/img/hero-slide-4.jpg'),
     cta: "Time My Success",
     link: "/services"
   },
@@ -475,7 +476,7 @@ export const HERO_SLIDES = [
     title: "Elite Brand Auditing",
     subtitle: "Commercial Prosperity Logic.",
     description: "Transform your business identity into a powerhouse of success through scientific numerical and Vastu alignment.",
-    image: "https://images.unsplash.com/photo-1543722530-d2c32013a181?auto=format&fit=crop&q=80&w=1920",
+    image: imgUrl('/assets/img/hero-slide-5.jpg'),
     cta: "Audit My Brand",
     link: "/brand-auditor"
   }

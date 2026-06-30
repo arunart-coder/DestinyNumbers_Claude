@@ -5,6 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Prepends Vite base URL so images work under /demo/ subdirectory
+export function imgUrl(path: string): string {
+  const base = import.meta.env.BASE_URL || '/';
+  return base + path.replace(/^\//, '');
+}
+
 export function formatImageUrl(url: string): string {
   if (!url) return '';
   if (url.includes('drive.google.com')) {

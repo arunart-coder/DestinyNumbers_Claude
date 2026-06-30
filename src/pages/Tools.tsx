@@ -1,3 +1,4 @@
+import { imgUrl } from '../lib/utils';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calculator, Scan, Smartphone, X, Heart, Palette, Briefcase, Calendar, Sparkles, ArrowRight, Compass } from 'lucide-react';
@@ -153,7 +154,7 @@ export default function ToolsPage() {
             <header 
               className="relative w-full overflow-hidden flex items-center justify-center text-center bg-cover bg-center shadow-md mb-8 px-4 pt-[95px] lg:pt-[135px] pb-5"
               style={{ 
-                backgroundImage: `linear-gradient(rgba(13, 27, 62, 0.72), rgba(13, 27, 62, 0.72)), url('https://lh3.googleusercontent.com/d/1m1FHAYOnDvmI9-tZysju3-BMS1Z9zy8C')`
+                backgroundImage: `linear-gradient(rgba(13, 27, 62, 0.72), rgba(13, 27, 62, 0.72)), url(imgUrl('/assets/img/tools-bg-2.jpg')`
               }}
             >
               <motion.div

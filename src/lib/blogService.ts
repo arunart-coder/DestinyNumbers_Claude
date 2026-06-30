@@ -1,3 +1,4 @@
+import { imgUrl } from './utils';
 import { BlogPost, HeroBanner, Category, MediaItem, Comment, BlogSettings, Revision, Author } from '../types/blog';
 import { INITIAL_BLOG_POSTS } from './initialArticles';
 import { db } from './firebase';
@@ -338,7 +339,7 @@ export const blogService = {
 
   getAuthors: (): Author[] => {
     return [
-      { name: 'Arun Poovaiah', role: 'Master Numerologist', avatar: 'https://lh3.googleusercontent.com/d/1uId_ZFDkU3pMdt7twbLd_brhx-GxL5Di', bio: 'Expert with 15+ years experience in Cosmic Vibrations.' },
+      { name: 'Arun Poovaiah', role: 'Master Numerologist', avatar: imgUrl('/assets/img/arun-profile.jpg'), bio: 'Expert with 15+ years experience in Cosmic Vibrations.' },
       { name: 'Destiny Team', role: 'Content Editors', avatar: '', bio: 'Curating wisdom for the global soul.' }
     ];
   },

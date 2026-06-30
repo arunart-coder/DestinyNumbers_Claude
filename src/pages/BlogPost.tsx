@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { blogService } from '../lib/blogService';
 import { BlogPost, BlogSettings } from '../types/blog';
 import { ArrowLeft, Facebook, Twitter, Linkedin, Sparkles } from 'lucide-react';
-import { formatImageUrl, cn } from '../lib/utils';
+import { formatImageUrl, cn } from '../lib/utils'; import { imgUrl } from '../lib/utils';
 import { INITIAL_BLOG_POSTS } from '../lib/initialArticles';
 import { EntrancesVastuCalculator } from '../components/EntrancesVastuCalculator';
 
@@ -229,7 +229,7 @@ export default function BlogPostPage() {
             <div className="mt-32 pt-16 border-t border-warm-border flex flex-col md:flex-row items-center md:items-start gap-10">
               <div className="w-24 h-24 rounded-full overflow-hidden shrink-0 border-2 border-warm-accent p-1">
                 <img 
-                  src={post.author.avatar || "https://lh3.googleusercontent.com/d/1uId_ZFDkU3pMdt7twbLd_brhx-GxL5Di"} 
+                  src={post.author.avatar || imgUrl('/assets/img/arun-profile.jpg')} 
                   alt={post.author.name} 
                   className="w-full h-full object-cover rounded-full" 
                   referrerPolicy="no-referrer"
