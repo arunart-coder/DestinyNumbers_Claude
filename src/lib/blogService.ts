@@ -1,27 +1,9 @@
 import { imgUrl } from './utils';
-import { BlogPost, HeroBanner, Category, MediaItem, Comment, BlogSettings, Revision, Author } from '../types/blog';
+import { BlogPost, Category, MediaItem, Comment, BlogSettings, Author } from '../types/blog';
 import { INITIAL_BLOG_POSTS } from './initialArticles';
-import { db } from './firebase';
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  setDoc, 
-  deleteDoc, 
-  updateDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit 
-} from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from './firestoreUtils';
+import { supabase } from './supabase';
 
-const POSTS_COLLECTION = 'posts';
-const CATEGORIES_COLLECTION = 'categories';
-const MEDIA_COLLECTION = 'media';
-const COMMENTS_COLLECTION = 'comments';
-const SETTINGS_DOC = 'settings/blog';
+const generateUUID = () => Date.now() + Math.random().toString(36).substr(2, 9);
 
 const DEFAULT_SETTINGS: BlogSettings = {
   blogTitle: "Destiny Numbers — Insights",
@@ -31,12 +13,7 @@ const DEFAULT_SETTINGS: BlogSettings = {
   commentsEnabled: true,
   relatedPostsEnabled: true,
   readingProgressBar: true,
-  socialSharing: {
-    whatsapp: true,
-    twitter: true,
-    linkedin: true,
-    copyLink: true
-  }
+  socialSharing: { whatsapp: true, twitter: true, linkedin: true, copyLink: true }
 };
 
 const DEFAULT_CATEGORIES: Category[] = [
@@ -48,311 +25,222 @@ const DEFAULT_CATEGORIES: Category[] = [
   { name: 'Lifestyle', color: '#C99B4C', postCount: 0 }
 ];
 
-// Helper for UUID
-const generateUUID = () => Date.now() + Math.random().toString(36).substr(2, 9);
-
 export const blogService = {
   getPosts: async (forceAll = false): Promise<BlogPost[]> => {
     try {
-      let q;
-      if (forceAll) {
-        q = query(collection(db, POSTS_COLLECTION));
-      } else {
-        // Query using equality constraints only to prevent composite index requirement
-        q = query(
-          collection(db, POSTS_COLLECTION), 
-          where('status', '==', 'published'),
-          where('visibility', '==', 'public')
-        );
+      let query = supabase.from('posts').select('*');
+      if (!forceAll) {
+        query = query.eq('status', 'published').eq('visibility', 'public');
       }
-      const snapshot = await getDocs(q);
-      let posts = snapshot.docs.map(doc => doc.data() as BlogPost);
-      
-      // Merge in initial static posts that do not already exist in Firestore by id/slug
-      const dbPostIds = new Set(posts.map(p => p.id));
-      const dbPostSlugs = new Set(posts.map(p => p.slug));
+      const { data, error } = await query;
+      if (error) throw error;
 
-      const mergedPosts = [...posts];
-      for (const initialPost of INITIAL_BLOG_POSTS) {
-        if (!dbPostIds.has(initialPost.id) && !dbPostSlugs.has(initialPost.slug)) {
-          if (forceAll || (initialPost.status === 'published' && initialPost.visibility === 'public')) {
-            mergedPosts.push(initialPost);
+      const posts = (data ?? []) as BlogPost[];
+      const dbIds = new Set(posts.map(p => p.id));
+      const dbSlugs = new Set(posts.map(p => p.slug));
+
+      const merged = [...posts];
+      for (const p of INITIAL_BLOG_POSTS) {
+        if (!dbIds.has(p.id) && !dbSlugs.has(p.slug)) {
+          if (forceAll || (p.status === 'published' && p.visibility === 'public')) {
+            merged.push(p);
           }
         }
       }
 
-      // Sort in-memory by publication/created date
-      mergedPosts.sort((a, b) => {
-        const dateA = new Date(a.createdAt || a.publishDate || 0).getTime();
-        const dateB = new Date(b.createdAt || b.publishDate || 0).getTime();
-        return dateB - dateA;
-      });
-      
-      return mergedPosts;
+      merged.sort((a, b) =>
+        new Date(b.createdAt || b.publishDate || 0).getTime() -
+        new Date(a.createdAt || a.publishDate || 0).getTime()
+      );
+      return merged;
     } catch (e) {
-      console.warn("Firestore collection list failed or pending. Falling back to local/initial data:", e);
-      // Fail gracefully: NEVER crash the site/context loader for normal visits
-      const localData = localStorage.getItem('dn_blog_posts');
-      if (localData) {
-        try {
-          return JSON.parse(localData);
-        } catch {
-          return INITIAL_BLOG_POSTS;
-        }
-      }
+      console.warn('getPosts failed, falling back:', e);
+      const local = localStorage.getItem('dn_blog_posts');
+      if (local) { try { return JSON.parse(local); } catch { } }
       return INITIAL_BLOG_POSTS;
     }
   },
 
   getPostBySlug: async (slug: string): Promise<BlogPost | undefined> => {
     try {
-      const q = query(collection(db, POSTS_COLLECTION), where('slug', '==', slug), limit(1));
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) {
-        return INITIAL_BLOG_POSTS.find(p => p.slug === slug);
-      }
-      return snapshot.docs[0].data() as BlogPost;
-    } catch (e) {
-      console.warn("Firestore getPostBySlug failed, falling back to initial data:", e);
+      const { data, error } = await supabase.from('posts').select('*').eq('slug', slug).single();
+      if (error || !data) return INITIAL_BLOG_POSTS.find(p => p.slug === slug);
+      return data as BlogPost;
+    } catch {
       return INITIAL_BLOG_POSTS.find(p => p.slug === slug);
     }
   },
 
   getPostById: async (id: string): Promise<BlogPost | undefined> => {
     try {
-      const docRef = doc(db, POSTS_COLLECTION, id);
-      const snapshot = await getDoc(docRef);
-      if (!snapshot.exists()) {
-        return INITIAL_BLOG_POSTS.find(p => p.id === id);
-      }
-      return snapshot.data() as BlogPost;
-    } catch (e) {
-      console.warn("Firestore getPostById failed, falling back to initial data:", e);
+      const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
+      if (error || !data) return INITIAL_BLOG_POSTS.find(p => p.id === id);
+      return data as BlogPost;
+    } catch {
       return INITIAL_BLOG_POSTS.find(p => p.id === id);
     }
   },
 
   savePost: async (post: BlogPost): Promise<void> => {
+    const id = post.id || generateUUID();
+    const now = new Date().toISOString();
+
+    let revisions = post.revisions ?? [];
     try {
-      const id = post.id || generateUUID();
-      const docRef = doc(db, POSTS_COLLECTION, id);
-      const snapshot = await getDoc(docRef);
-      
-      const updatedPost = { ...post, id, updatedAt: new Date().toISOString() };
-      
-      if (snapshot.exists()) {
-        const oldPost = snapshot.data() as BlogPost;
-        const revision: Revision = {
-          date: oldPost.updatedAt,
-          content: oldPost.content,
-          wordCount: oldPost.wordCount
-        };
-        updatedPost.revisions = [revision, ...(oldPost.revisions || [])].slice(0, 5);
-      } else {
-        updatedPost.createdAt = post.createdAt || new Date().toISOString();
-        updatedPost.revisions = [];
+      const { data: existing } = await supabase.from('posts').select('content,updatedAt,wordCount,revisions').eq('id', id).single();
+      if (existing) {
+        revisions = [{ date: existing.updatedAt, content: existing.content, wordCount: existing.wordCount }, ...(existing.revisions ?? [])].slice(0, 5);
       }
-      
-      await setDoc(docRef, updatedPost);
-      await blogService.updateCategoryCounts();
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('cms-update'));
-      }
-    } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, POSTS_COLLECTION);
-    }
+    } catch { }
+
+    const updatedPost = {
+      ...post,
+      id,
+      updatedAt: now,
+      createdAt: post.createdAt || now,
+      revisions,
+    };
+
+    const { error } = await supabase.from('posts').upsert(updatedPost);
+    if (error) throw error;
+    await blogService.updateCategoryCounts();
+    window.dispatchEvent(new Event('cms-update'));
   },
 
   deletePost: async (id: string): Promise<void> => {
-    try {
-      await deleteDoc(doc(db, POSTS_COLLECTION, id));
-      await blogService.updateCategoryCounts();
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('cms-update'));
-      }
-    } catch (e) {
-      handleFirestoreError(e, OperationType.DELETE, `${POSTS_COLLECTION}/${id}`);
-    }
+    const { error } = await supabase.from('posts').delete().eq('id', id);
+    if (error) throw error;
+    await blogService.updateCategoryCounts();
+    window.dispatchEvent(new Event('cms-update'));
   },
 
   incrementViews: async (slug: string): Promise<void> => {
     try {
-      const q = query(collection(db, POSTS_COLLECTION), where('slug', '==', slug), limit(1));
-      const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        const postDoc = snapshot.docs[0];
-        const postData = postDoc.data() as BlogPost;
-        await updateDoc(postDoc.ref, { views: (postData.views || 0) + 1 });
+      const { data } = await supabase.from('posts').select('id,views').eq('slug', slug).single();
+      if (data) {
+        await supabase.from('posts').update({ views: (data.views || 0) + 1 }).eq('id', data.id);
       }
-    } catch (e) {
-      handleFirestoreError(e, OperationType.UPDATE, POSTS_COLLECTION);
-    }
+    } catch { }
   },
 
   // Categories
   getCategories: async (): Promise<Category[]> => {
     try {
-      const snapshot = await getDocs(collection(db, CATEGORIES_COLLECTION));
-      const categories = snapshot.docs.map(doc => doc.data() as Category);
-      if (categories.length === 0) {
-        return DEFAULT_CATEGORIES;
-      }
-      return categories;
-    } catch (e) {
-      console.warn("Firestore getCategories failed, falling back to default:", e);
+      const { data, error } = await supabase.from('categories').select('*');
+      if (error) throw error;
+      return (data?.length ? data : DEFAULT_CATEGORIES) as Category[];
+    } catch {
       return DEFAULT_CATEGORIES;
     }
   },
 
   saveCategory: async (category: Category): Promise<void> => {
-    try {
-      await setDoc(doc(db, CATEGORIES_COLLECTION, category.name), category);
-    } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, CATEGORIES_COLLECTION);
-    }
+    const { error } = await supabase.from('categories').upsert(category);
+    if (error) throw error;
   },
 
-  deleteCategory: async (name: string, fallbackCategory?: string): Promise<void> => {
-    try {
-      const posts = await blogService.getPosts();
-      for (const p of posts) {
-        if (p.category === name) {
-          p.category = fallbackCategory || 'Uncategorized';
-          await blogService.savePost(p);
-        }
+  deleteCategory: async (name: string, fallbackCategory = 'Uncategorized'): Promise<void> => {
+    const posts = await blogService.getPosts();
+    for (const p of posts) {
+      if (p.category === name) {
+        await blogService.savePost({ ...p, category: fallbackCategory });
       }
-      await deleteDoc(doc(db, CATEGORIES_COLLECTION, name));
-      await blogService.updateCategoryCounts();
-    } catch (e) {
-      handleFirestoreError(e, OperationType.DELETE, `${CATEGORIES_COLLECTION}/${name}`);
     }
+    const { error } = await supabase.from('categories').delete().eq('name', name);
+    if (error) throw error;
+    await blogService.updateCategoryCounts();
   },
 
   updateCategoryCounts: async (): Promise<void> => {
     try {
-      const posts = await blogService.getPosts();
-      let categories = await blogService.getCategories();
-      
-      const counts: { [key: string]: number } = {};
-      posts.forEach(p => {
-        counts[p.category] = (counts[p.category] || 0) + 1;
-      });
-
-      for (const cat of categories) {
-        cat.postCount = counts[cat.name] || 0;
-        await blogService.saveCategory(cat);
-      }
+      const [posts, categories] = await Promise.all([blogService.getPosts(), blogService.getCategories()]);
+      const counts: Record<string, number> = {};
+      posts.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
+      await Promise.all(categories.map(cat => blogService.saveCategory({ ...cat, postCount: counts[cat.name] || 0 })));
     } catch (e) {
-      console.error('Error updating category counts:', e);
+      console.error('updateCategoryCounts failed:', e);
     }
   },
 
   // Media
   getMedia: async (): Promise<MediaItem[]> => {
     try {
-      const snapshot = await getDocs(query(collection(db, MEDIA_COLLECTION), orderBy('date', 'desc')));
-      return snapshot.docs.map(doc => doc.data() as MediaItem);
-    } catch (e) {
-      try {
-        handleFirestoreError(e, OperationType.LIST, MEDIA_COLLECTION);
-      } catch (logError) {
-        console.warn("Failed to retrieve media list from Firestore:", logError);
-      }
+      const { data, error } = await supabase.from('media').select('*').order('date', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as MediaItem[];
+    } catch {
       return [];
     }
   },
 
   saveMedia: async (item: MediaItem): Promise<void> => {
-    try {
-      await setDoc(doc(db, MEDIA_COLLECTION, item.id), item);
-    } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, MEDIA_COLLECTION);
-    }
+    const { error } = await supabase.from('media').upsert(item);
+    if (error) throw error;
   },
 
   deleteMedia: async (id: string): Promise<void> => {
-    try {
-      await deleteDoc(doc(db, MEDIA_COLLECTION, id));
-    } catch (e) {
-      handleFirestoreError(e, OperationType.DELETE, `${MEDIA_COLLECTION}/${id}`);
-    }
+    const { error } = await supabase.from('media').delete().eq('id', id);
+    if (error) throw error;
   },
 
   // Comments
   getComments: async (): Promise<Comment[]> => {
     try {
-      const snapshot = await getDocs(collection(db, COMMENTS_COLLECTION));
-      return snapshot.docs.map(doc => doc.data() as Comment);
-    } catch (e) {
-      console.warn("Firestore getComments failed, returning empty list:", e);
+      const { data, error } = await supabase.from('comments').select('*');
+      if (error) throw error;
+      return (data ?? []) as Comment[];
+    } catch {
       return [];
     }
   },
 
   getCommentsBySlug: async (slug: string): Promise<Comment[]> => {
     try {
-      const q = query(collection(db, COMMENTS_COLLECTION), where('articleSlug', '==', slug), where('status', '==', 'approved'));
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => doc.data() as Comment);
-    } catch (e) {
-      console.warn("Firestore getCommentsBySlug failed, returning empty list:", e);
+      const { data, error } = await supabase.from('comments').select('*').eq('articleSlug', slug).eq('status', 'approved');
+      if (error) throw error;
+      return (data ?? []) as Comment[];
+    } catch {
       return [];
     }
   },
 
   saveComment: async (comment: Comment): Promise<void> => {
-    try {
-      const id = comment.id || generateUUID();
-      await setDoc(doc(db, COMMENTS_COLLECTION, id), { ...comment, id, date: comment.date || new Date().toISOString() });
-    } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, COMMENTS_COLLECTION);
-    }
+    const id = comment.id || generateUUID();
+    const { error } = await supabase.from('comments').upsert({ ...comment, id, date: comment.date || new Date().toISOString() });
+    if (error) throw error;
   },
 
   deleteComment: async (id: string): Promise<void> => {
-    try {
-      await deleteDoc(doc(db, COMMENTS_COLLECTION, id));
-    } catch (e) {
-      handleFirestoreError(e, OperationType.DELETE, `${COMMENTS_COLLECTION}/${id}`);
-    }
+    const { error } = await supabase.from('comments').delete().eq('id', id);
+    if (error) throw error;
   },
 
   // Settings
   getSettings: async (): Promise<BlogSettings> => {
     try {
-      const docRef = doc(db, SETTINGS_DOC);
-      const snapshot = await getDoc(docRef);
-      return snapshot.exists() ? snapshot.data() as BlogSettings : DEFAULT_SETTINGS;
-    } catch (e) {
-      console.warn("Firestore getSettings failed, returning default settings:", e);
+      const { data, error } = await supabase.from('settings').select('value').eq('key', 'blog').single();
+      if (error || !data) return DEFAULT_SETTINGS;
+      return data.value as BlogSettings;
+    } catch {
       return DEFAULT_SETTINGS;
     }
   },
 
   saveSettings: async (settings: BlogSettings): Promise<void> => {
-    try {
-      await setDoc(doc(db, SETTINGS_DOC), settings);
-    } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, SETTINGS_DOC);
-    }
+    const { error } = await supabase.from('settings').upsert({ key: 'blog', value: settings });
+    if (error) throw error;
   },
 
-  getAuthors: (): Author[] => {
-    return [
-      { name: 'Arun Poovaiah', role: 'Master Numerologist', avatar: imgUrl('/assets/img/arun-profile.jpg'), bio: 'Expert with 15+ years experience in Cosmic Vibrations.' },
-      { name: 'Destiny Team', role: 'Content Editors', avatar: '', bio: 'Curating wisdom for the global soul.' }
-    ];
-  },
+  getAuthors: (): Author[] => [
+    { name: 'Arun Poovaiah', role: 'Master Numerologist', avatar: imgUrl('/assets/img/arun-profile.jpg'), bio: 'Expert with 15+ years experience in Cosmic Vibrations.' },
+    { name: 'Destiny Team', role: 'Content Editors', avatar: '', bio: 'Curating wisdom for the global soul.' }
+  ],
 
-  // Autosave (keep in localStorage as it's temporary/local)
   saveAutosave: (post: Partial<BlogPost>): void => {
-    localStorage.setItem('dn_autosave', JSON.stringify({
-      post,
-      timestamp: Date.now()
-    }));
+    localStorage.setItem('dn_autosave', JSON.stringify({ post, timestamp: Date.now() }));
   },
 
-  getAutosave: (): { post: Partial<BlogPost>, timestamp: number } | null => {
+  getAutosave: (): { post: Partial<BlogPost>; timestamp: number } | null => {
     const data = localStorage.getItem('dn_autosave');
     return data ? JSON.parse(data) : null;
   },
@@ -361,4 +249,3 @@ export const blogService = {
     localStorage.removeItem('dn_autosave');
   }
 };
-

@@ -22,7 +22,7 @@ import {
   SERVICES, COURSES, TESTIMONIALS, FAQ, BRAND_DATA, HERO_SLIDES 
 } from '../lib/constants';
 import { useBrand } from '../lib/BrandContext';
-import { cn, imgUrl } from '../lib/utils'; import { imgUrl } from '../lib/utils';
+import { cn, imgUrl } from '../lib/utils';
 import { Link } from 'react-router-dom';
 
 export function Hero() {

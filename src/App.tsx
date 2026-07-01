@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Navbar, Footer, WhatsAppCTA } from './components/Layout';
@@ -62,6 +63,21 @@ function ScrollToTop() {
   return null;
 }
 
+function AppLayout({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith('/admin');
+  return (
+    <div className="flex flex-col min-h-screen">
+      {!isAdmin && <Navbar />}
+      <main className={isAdmin ? 'flex-grow' : 'flex-grow pt-[80px] lg:pt-[120px]'}>
+        {children}
+      </main>
+      {!isAdmin && <Footer />}
+      {!isAdmin && <WhatsAppCTA />}
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <CMSProvider>
@@ -69,10 +85,8 @@ export default function App() {
         <BrandProvider>
           <Router basename="/demo">
             <ScrollToTop />
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow pt-[80px] lg:pt-[120px]">
-                <Routes>
+            <AppLayout>
+              <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/services" element={<ServicesPage />} />
                   <Route path="/services/numerology" element={<Numerology />} />
@@ -125,10 +139,7 @@ export default function App() {
                   <Route path="/terms" element={<TermsConditions />} />
                   <Route path="/refund" element={<RefundPolicy />} />
                 </Routes>
-              </main>
-              <Footer />
-              <WhatsAppCTA />
-            </div>
+            </AppLayout>
           </Router>
         </BrandProvider>
       </AuthProvider>

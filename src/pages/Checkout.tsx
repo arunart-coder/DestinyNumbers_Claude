@@ -1,4 +1,5 @@
 import { imgUrl } from '../lib/utils';
+import { PRODUCT_IMAGE_MAP } from '../lib/productsData';
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -160,7 +161,12 @@ export default function Checkout() {
                   className="flex gap-5 bg-white border border-[#E8E2D8] p-4"
                 >
                   <div className="w-24 h-24 bg-[#FAFAF8] border border-[#E8E2D8]/50 flex-shrink-0 overflow-hidden">
-                    <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                    <img
+                      src={PRODUCT_IMAGE_MAP[item.product.id] ?? item.product.image}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                   <div className="flex-grow">
                     <div className="flex justify-between items-start">

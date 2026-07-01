@@ -1,4 +1,6 @@
 import { imgUrl } from '../lib/utils';
+import { PRODUCTS, Product, PRODUCT_DETAILED_BULLETS } from '../lib/productsData';
+import { productService } from '../lib/productService';
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -20,301 +22,66 @@ import {
 import { BRAND_DATA } from '../lib/constants';
 import { HeroHeader } from '../components/HeroHeader';
 
-interface Product {
-  id: string;
-  name: string;
-  subtitle?: string; // Optional subtitle/alternate heading
-  category: 'Yantras' | 'Crystals' | 'Vastu' | 'Bracelets';
-  categories: string[]; // Supports multiple categories to ensure full filter alignment
-  price: number;
-  description: string;
-  rating: number;
-  image: string;
-}
-
-const PRODUCTS: Product[] = [
-  {
-    id: 'surya-yantra',
-    name: 'Surya Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Gold-plated solar grid for solar activation, leadership, vitality, and authority.',
-    rating: 4.9,
-    image: imgUrl('/assets/img/products/surya-yantra.jpg')
-  },
-  {
-    id: 'budh-yantra',
-    name: 'Budh Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Sacred matrix for Mercury (Budha) to enhance intellect, business decisions, and trade growth.',
-    rating: 4.8,
-    image: imgUrl('/assets/img/products/budh-yantra.jpg')
-  },
-  {
-    id: 'budh-pyra-yantra',
-    name: 'Budh-Pyra Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Pyramid-amplified Mercury grid for rapid analytical clarity, professional focus, and commerce.',
-    rating: 4.9,
-    image: imgUrl('/assets/img/products/budh-pyra-yantra.jpg')
-  },
-  {
-    id: 'pyra-yantra',
-    name: 'Pyra Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Multi-layered pyramid geometry plate matching prime cosmic frequencies for environmental balance.',
-    rating: 4.7,
-    image: imgUrl('/assets/img/products/pyra-yantra.jpg')
-  },
-  {
-    id: 'gayatri-yantra',
-    name: 'Gayatri Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Supreme radiant grid invoking divine light, spiritual expansion, clear consciousness, and block removal.',
-    rating: 5.0,
-    image: imgUrl('/assets/img/products/gayatri-yantra.jpg')
-  },
-  {
-    id: 'saraswati-yantra',
-    name: 'Saraswati Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Refined geometric plate for concentration, artistic mastery, academics, and divine creative wisdom.',
-    rating: 4.9,
-    image: imgUrl('/assets/img/products/saraswati-yantra.jpg')
-  },
-  {
-    id: 'surya-pyra-yantra',
-    name: 'Surya-Pyra Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Pyramid solar grid creating accelerated energy amplification for business prestige and physical strength.',
-    rating: 4.9,
-    image: imgUrl('/assets/img/products/surya-pyra-yantra.jpg')
-  },
-  {
-    id: 'surya-budh-yantra',
-    name: 'Surya-Budh Yantra',
-    category: 'Yantras',
-    categories: ['Yantras'],
-    price: 7999,
-    description: 'Budhaditya combination grid that balances logic and action. Triggers profound executive success.',
-    rating: 5.0,
-    image: imgUrl('/assets/img/products/surya-budh-yantra.jpg')
-  },
-  {
-    id: 'crystal-bracelet',
-    name: 'Crystal Bracelet',
-    category: 'Bracelets',
-    categories: ['Bracelets', 'Crystals'],
-    price: 600,
-    description: 'Premium amethyst and quartz crystal beads tuned to clear energetic blockages and restore calm focus.',
-    rating: 4.8,
-    image: imgUrl('/assets/img/products/crystal-bracelet.jpg')
-  },
-  {
-    id: 'wood-crystal-bracelet',
-    name: 'Wood Crystal Bracelet',
-    category: 'Bracelets',
-    categories: ['Bracelets'],
-    price: 500,
-    description: 'Natural aromatic sandalwood beads matched with genuine Tiger\'s Eye for deep grounding and shield protection.',
-    rating: 4.7,
-    image: imgUrl('/assets/img/products/wood-crystal-bracelet.jpg')
-  },
-  {
-    id: 'vastu-crystal-set',
-    name: 'Max Pyramid',
-    category: 'Vastu',
-    categories: ['Vastu'],
-    price: 6000,
-    description: 'Maximum pyramid energy for home, office, and meditation spaces.',
-    rating: 4.9,
-    image: imgUrl('/assets/img/products/max-pyramid.webp')
-  },
-  {
-    id: 'vastu-copper-helix',
-    name: 'Navratna for Vastu',
-    subtitle: 'Navarathna Set Box for Bhoomi Pooja & Good Vastu | 7×5 mm',
-    category: 'Vastu',
-    categories: ['Vastu'],
-    price: 2500,
-    description: 'Nine planets. One foundation. A lifetime of cosmic harmony.',
-    rating: 4.8,
-    image: imgUrl('/assets/img/products/navratna-vastu.jpg')
-  }
-];
-
 interface CartItem {
   product: Product;
   quantity: number;
 }
 
-const PRODUCT_DETAILED_BULLETS: Record<string, string[]> = {
-  'surya-yantra': [
-    "Low energy, self-doubt, or lack of direction — Surya yantra works on all three",
-    "Channels the raw power of the Sun to restore confidence and inner fire",
-    "Strengthens willpower, ambition, and your ability to lead with authority",
-    "A powerful tool for anyone in a growth phase or navigating major life decisions",
-    "Energised to fuel fearless action, clarity of purpose, and lasting personal growth"
-  ],
-  'budh-yantra': [
-    "Stress, mental fog, and communication breakdowns — Mercury yantra addresses all three",
-    "Realigns the nervous system and thought process for sharper, calmer functioning",
-    "Removes energetic blockages that cloud judgment and strain relationships",
-    "A precision tool for professionals, decision-makers, and deep thinkers under pressure",
-    "Ritually energised to restore mental clarity, emotional balance, and confident expression"
-  ],
-  'budh-pyra-yantra': [
-    "Two powerful energies, one complete remedy for mind and heart",
-    "Budh governs logic, communication, and sharp decisive thinking",
-    "Pyra governs emotional healing and astrological chart realignment",
-    "Ideal for mental clutter, strained relationships, or persistently off-balance life phases",
-    "Energised for those ready to think better, feel lighter, and live with renewed clarity"
-  ],
-  'pyra-yantra': [
-    "One yantra. Total life stabilisation across relationships, health, and finances",
-    "Targets the root cause — missing energies in your personal numerology chart",
-    "Rebuilds your energetic foundation so every area of life can move forward again",
-    "Not a quick fix — a deep, lasting realignment of your life's natural rhythm",
-    "Ritually activated using authentic Vedic methods for precise, purposeful correction"
-  ],
-  'gayatri-yantra': [
-    "Spiritual protection, emotional healing, and inner strength — when you need it most",
-    "Specifically designed for difficult life phases — illness, emotional crisis, or dark nights of the soul",
-    "Works on the energetic level to restore resilience, hope, and clarity of spirit",
-    "A sacred tool trusted across generations to shield, uplift, and realign",
-    "Fully energised and activated to serve as your most reliable anchor in uncertain times"
-  ],
-  'saraswati-yantra': [
-    "Struggling with focus, creative blocks, or slow learning — Saraswati yantra works at the source",
-    "Activates memory, sharpens concentration, and restores natural flow in thought and expression",
-    "The ideal energetic tool for students facing exams, creators chasing breakthroughs, and teachers seeking deeper impact",
-    "Works across all disciplines — academic, artistic, spiritual, and professional",
-    "Charged for measurable clarity of mind, accelerated learning, and effortless brilliance in expression"
-  ],
-  'surya-pyra-yantra': [
-    "Two forces. One complete solution for vitality, relationships, and energetic alignment",
-    "Surya rebuilds life force, drive, and the confidence to move forward with clarity",
-    "Pyra's Loshu Grid corrects missing chart elements and restores harmony in family and personal energy",
-    "Addresses the root numerological gaps that silently affect health, relationships, and momentum",
-    "A high-impact yantra for anyone feeling persistently low, disconnected, or energetically incomplete"
-  ],
-  'surya-budh-yantra': [
-    "Indecision, mental fog, and low confidence — this dual yantra targets all three at the source",
-    "Surya activates leadership energy, self-belief, and unwavering personal direction",
-    "Budh sharpens analytical thinking, emotional intelligence, and clear decisive communication",
-    "A precision tool for professionals, leaders, and individuals in high-stakes personal or career transitions",
-    "Ritually energised using Vedic methods for deep, measurable, and long-lasting transformation"
-  ],
-  'crystal-bracelet': [
-    "The numbers missing from your birth date shape your struggles more than you realise",
-    "Absence of 2, 5, or 8 creates mental turbulence, emotional reactivity, and energetic depletion",
-    "This yantra directly corrects those gaps — calming the mind, cooling the temperament, restoring flow",
-    "Delivers measurable clarity and stronger decision-making regardless of your numeroscope's completeness",
-    "Compact, purposeful, and deeply effective — your daily anchor for focus, balance, and lasting alignment"
-  ],
-  'wood-crystal-bracelet': [
-    "Missing 3 or 4 in your numeroscope creates restlessness, health imbalances, and eroding confidence",
-    "This yantra directly targets those numerological gaps with focused, corrective energy",
-    "Clears aura-based blockages that conventional remedies simply cannot reach",
-    "Natural wood and crystal work in harmony — one anchors, the other heals and amplifies",
-    "A precise, elegant, and powerfully effective tool for those ready to restore balance at the root level"
-  ],
-  'vastu-crystal-set': [
-    "Maximum pyramid energy for home, office, and meditation spaces.",
-    "The South-East governs nourishment; the South-West governs bonds — this yantra speaks to both",
-    "Place it with intention in your kitchen or relationship zone and feel the shift unfold gradually",
-    "For deeper imbalances, bury it in the earth and let it work silently at the soil's energetic core",
-    "Energised to harmonise direction, space, and the invisible forces that shape how your home truly feels"
-  ],
-  'vastu-copper-helix': [
-    "Nine sacred gemstones, one powerful remedy — the Navaratna set channels the combined energy of all nine planetary forces into your home's foundation",
-    "Installed at the centre of the foundation before construction begins, anchoring cosmic balance into the very structure of your space",
-    "Each gemstone corresponds to a specific planet — correcting imbalances, neutralising doshas, and inviting prosperity, health, and harmony from the ground up",
-    "A time-honoured Vedic practice that transforms your home into an energetically protected and positively charged living environment",
-    "Energised and ritually activated to ensure every room above it benefits from stable, harmonious, and uninterrupted planetary flow"
-  ]
-};
 
-const PRODUCT_GALLERIES: Record<string, string[]> = {
+// Secondary gallery images only — first image always comes from PRODUCT_IMAGE_MAP
+const PRODUCT_GALLERY_EXTRAS: Record<string, string[]> = {
   'surya-yantra': [
-    imgUrl('/assets/img/product-yantra-1.jpg'),
     'https://lh3.googleusercontent.com/d/1T7q2so20z691C0zr1X7U5ozU1sxbQA-h',
     'https://lh3.googleusercontent.com/d/1HaECHyqDsi4u3HgQ2aQddmqYi7BMqx7p',
     'https://lh3.googleusercontent.com/d/1KG8NNQ9-Z-l4hybVmoYKugTi94ij1o0j'
   ],
   'budh-yantra': [
-    imgUrl('/assets/img/product-bracelet-1.jpg'),
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR',
     'https://lh3.googleusercontent.com/d/162a_bZWUebZ9ffpCmoCflqdJn1lrkuNa',
     'https://lh3.googleusercontent.com/d/1PSDzpABHR2rDVPXr4SFFL4a5L4oy6DdC'
   ],
   'budh-pyra-yantra': [
-    imgUrl('/assets/img/product-bracelet-1.jpg'),
-    imgUrl('/assets/img/product-vastu-1.jpg'),
     'https://lh3.googleusercontent.com/d/1XzKvx2OEtwsbXeqFSJHfNd4icGqMXNtn',
     'https://lh3.googleusercontent.com/d/12UyKiXog-ulOs2Fk3lL_J0i-h-9btNLe'
   ],
   'pyra-yantra': [
-    imgUrl('/assets/img/product-vastu-1.jpg'),
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR',
     'https://lh3.googleusercontent.com/d/12UyKiXog-ulOs2Fk3lL_J0i-h-9btNLe',
     'https://lh3.googleusercontent.com/d/1vasvw1inCM-MOHxPbUb83D0SUPrerxOm'
   ],
   'gayatri-yantra': [
-    imgUrl('/assets/img/product-crystal-1.jpg'),
     'https://lh3.googleusercontent.com/d/1YmyZ2mTpPoj7lvkVftKcn7hICwAttMC6',
     'https://lh3.googleusercontent.com/d/1x2TycGVMflmXv92kpVoFuPPI-OQb9CuY',
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR'
   ],
   'saraswati-yantra': [
-    imgUrl('/assets/img/product-2.jpg'),
     'https://lh3.googleusercontent.com/d/1IQynURnLVBUAhtakk9VDVrsP_a5Ni2Pc',
     'https://lh3.googleusercontent.com/d/1tRqSAchjv0PJ_M19gVBjyygTceYdi8kW',
     'https://lh3.googleusercontent.com/d/13-njqro_Hc0fYvwgCkFO443GptgEnqgR'
   ],
   'surya-pyra-yantra': [
-    imgUrl('/assets/img/product-yantra-1.jpg'),
-    imgUrl('/assets/img/product-vastu-1.jpg'),
     'https://lh3.googleusercontent.com/d/12UyKiXog-ulOs2Fk3lL_J0i-h-9btNLe',
     'https://lh3.googleusercontent.com/d/1HaECHyqDsi4u3HgQ2aQddmqYi7BMqx7p'
   ],
   'surya-budh-yantra': [
     'https://lh3.googleusercontent.com/d/1Ij5ia2AbiqHKmwmCOqGa0RhXR2RUcTzO',
     'https://lh3.googleusercontent.com/d/1XzKvx2OEtwsbXeqFSJHfNd4icGqMXNtn',
-    'https://lh3.googleusercontent.com/d/162a_bZWUebZ9ffpCmoCflqdJn1lrkuNa',
-    'https://lh3.googleusercontent.com/d/1HaECHyqDsi4u3HgQ2aQddmqYi7BMqx7p'
+    'https://lh3.googleusercontent.com/d/162a_bZWUebZ9ffpCmoCflqdJn1lrkuNa'
   ],
   'crystal-bracelet': [
-    imgUrl('/assets/img/product-3.jpg'),
     'https://lh3.googleusercontent.com/d/1ZFXYUYT3tSieHypiCYfs3Bo9f48rF2sX',
     'https://lh3.googleusercontent.com/d/1xFFmrjDujtaZvjxV5loG52cuYGsOzxwn',
     'https://lh3.googleusercontent.com/d/1SCQk9P6Ox1RCkKjYMnEcbct_jsHUpnQN'
   ],
   'wood-crystal-bracelet': [
-    imgUrl('/assets/img/product-4.jpg'),
     'https://lh3.googleusercontent.com/d/1gIbEAo4N_VrCyIfRla69OT5HmJ8Js7ys',
     'https://lh3.googleusercontent.com/d/1J3IGWqNewiNRP_HqHGQlkNreKMHTjMBz',
     'https://lh3.googleusercontent.com/d/1S_gLEjsYW0sW2p105nKeERMCSMVoNQfj'
   ],
   'vastu-crystal-set': [
-    imgUrl('/assets/img/product-5.jpg'),
     'https://lh3.googleusercontent.com/d/1RSFxLvpr-v4seP6-lQN1lHSnmKgnFTib'
   ],
   'vastu-copper-helix': [
-    imgUrl('/assets/img/product-6.jpg'),
     'https://lh3.googleusercontent.com/d/1E5p9HiMuYQ3mnaa3WYltA9T6Ku-goRP5'
   ]
 };
@@ -339,6 +106,12 @@ export default function Products() {
       setSelectedCategory('All');
     }
   }, [location.search]);
+
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+
+  useEffect(() => {
+    productService.getProducts().then(setProducts);
+  }, []);
 
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<string>('Default');
@@ -378,13 +151,10 @@ export default function Products() {
     setPincodeStatus(null);
   };
 
-  const getGalleryImages = (id: string): string[] => {
-    return PRODUCT_GALLERIES[id] || [
-      imgUrl('/assets/img/product-yantra-2.jpg'),
-      imgUrl('/assets/img/product-yantra-3.jpg'),
-      imgUrl('/assets/img/product-yantra-4.jpg'),
-      imgUrl('/assets/img/product-yantra-5.jpg')
-    ];
+  const getGalleryImages = (product: Product): string[] => {
+    if (product.images && product.images.length > 0) return product.images;
+    const extras = PRODUCT_GALLERY_EXTRAS[product.id] ?? [];
+    return [product.image, ...extras];
   };
 
   const getProductBullets = (id: string): string[] => {
@@ -395,6 +165,9 @@ export default function Products() {
       "Clears heavy vibrations to foster continuous growth, protective focus, and peace."
     ];
   };
+
+  const isHtml = (str: string) => /<[a-z][\s\S]*>/i.test(str);
+  const stripHtml = (str: string) => str.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const handleCheckPincode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -509,14 +282,11 @@ export default function Products() {
 
   // Filter and Sort logic
   const filteredProducts = useMemo(() => {
-    let result = [...PRODUCTS];
+    let result = [...products];
 
     // Filter by category
     if (selectedCategory !== 'All') {
-      result = result.filter(product => {
-        // Match either primary category or arrays
-        return product.categories.includes(selectedCategory);
-      });
+      result = result.filter(product => product.categories.includes(selectedCategory));
     }
 
     // Sort by price
@@ -527,7 +297,7 @@ export default function Products() {
     }
 
     return result;
-  }, [selectedCategory, sortBy]);
+  }, [products, selectedCategory, sortBy]);
 
   // Standalone Single-File HTML Generation
   const standaloneHtmlCode = useMemo(() => {
@@ -1107,7 +877,7 @@ export default function Products() {
                         {p.name}
                       </h3>
                       <p className="text-[11px] text-[#1C3557]/60 font-light leading-snug line-clamp-2 h-8">
-                        {p.description}
+                        {isHtml(p.description) ? stripHtml(p.description) : p.description}
                       </p>
                       <button 
                         onClick={() => handleOpenProductDetails(p)}
@@ -1527,9 +1297,9 @@ export default function Products() {
               <div className="flex flex-col gap-4">
                 {/* Active Image Frame */}
                 <div className="relative bg-white aspect-square w-full overflow-hidden border border-[#E8E2D8] flex items-center justify-center p-1 shadow-sm">
-                  <img 
-                    src={getGalleryImages(selectedProductForDetail.id)[detailActiveImgIndex]} 
-                    alt={selectedProductForDetail.name} 
+                  <img
+                    src={getGalleryImages(selectedProductForDetail)[detailActiveImgIndex]}
+                    alt={selectedProductForDetail.name}
                     className="w-full h-full object-cover select-none"
                     referrerPolicy="no-referrer"
                   />
@@ -1541,9 +1311,9 @@ export default function Products() {
                 {/* Slides/Carousel Thumbnails Flanked by Navigation Arrows */}
                 <div className="flex items-center justify-between gap-3 px-1 mt-2">
                   {/* Left arrow */}
-                  <button 
+                  <button
                     onClick={() => {
-                      const imgs = getGalleryImages(selectedProductForDetail.id);
+                      const imgs = getGalleryImages(selectedProductForDetail);
                       setDetailActiveImgIndex((prev) => (prev === 0 ? imgs.length - 1 : prev - 1));
                     }}
                     className="p-2 border border-[#E8E2D8] bg-white text-[#1C3557] hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all font-mono font-bold leading-none select-none text-sm"
@@ -1554,26 +1324,26 @@ export default function Products() {
 
                   {/* Thumbnail Row */}
                   <div className="flex-grow flex items-center justify-center gap-2 overflow-x-auto py-1 scrollbar-none">
-                    {getGalleryImages(selectedProductForDetail.id).map((img, idx) => (
+                    {getGalleryImages(selectedProductForDetail).map((img, idx) => (
                       <button
                         key={idx}
                         onClick={() => setDetailActiveImgIndex(idx)}
                         className={`w-12 h-12 bg-white border-2 overflow-hidden flex-shrink-0 transition-all ${
-                          idx === detailActiveImgIndex 
-                            ? 'border-[#1C3557] scale-102 ring-1 ring-[#1C3557]/40' 
+                          idx === detailActiveImgIndex
+                            ? 'border-[#1C3557] scale-102 ring-1 ring-[#1C3557]/40'
                             : 'border-[#E8E2D8] hover:border-[#C9A84C]'
                         }`}
                         style={{ borderRadius: '0px' }}
                       >
-                        <img src={img} className="w-full h-full object-cover pointer-events-none" alt="" />
+                        <img src={img} className="w-full h-full object-cover pointer-events-none" alt="" referrerPolicy="no-referrer" />
                       </button>
                     ))}
                   </div>
 
                   {/* Right arrow */}
-                  <button 
+                  <button
                     onClick={() => {
-                      const imgs = getGalleryImages(selectedProductForDetail.id);
+                      const imgs = getGalleryImages(selectedProductForDetail);
                       setDetailActiveImgIndex((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
                     }}
                     className="p-2 border border-[#E8E2D8] bg-white text-[#1C3557] hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all font-mono font-bold leading-none select-none text-sm"
@@ -1657,14 +1427,21 @@ export default function Products() {
                     <h3 className="text-xs font-bold text-[#1C3557] uppercase tracking-widest border-b border-[#E8E2D8]/80 pb-1.5">
                       Description
                     </h3>
-                    <ul className="space-y-2 text-xs text-[#1C3557]/80 font-light leading-relaxed">
-                      {getProductBullets(selectedProductForDetail.id).map((bullet, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-[#C9A84C] font-bold text-[14px] leading-none select-none mt-0.5">•</span>
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {isHtml(selectedProductForDetail.description) ? (
+                      <div
+                        className="prose prose-sm max-w-none text-[#1C3557]/80 text-xs leading-relaxed [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-1 [&_strong]:font-semibold [&_p]:mb-2"
+                        dangerouslySetInnerHTML={{ __html: selectedProductForDetail.description }}
+                      />
+                    ) : (
+                      <ul className="space-y-2 text-xs text-[#1C3557]/80 font-light leading-relaxed">
+                        {getProductBullets(selectedProductForDetail.id).map((bullet, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="text-[#C9A84C] font-bold text-[14px] leading-none select-none mt-0.5">•</span>
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
 

@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  FileText, Image as ImageIcon, Settings, 
-  Plus, Edit2, Trash2, Eye, 
+import {
+  FileText, Image as ImageIcon, Settings,
+  Plus, Edit2, Trash2, Eye,
   BarChart3, MessageSquare, Tag,
   LogOut, ArrowRight, Search, ChevronDown,
   Download, Upload, Copy, Check, Filter,
   SortAsc, SortDesc, MoreHorizontal, Maximize2,
-  Calendar, User, Globe
+  Calendar, User, Globe, Package, Menu, X as XIcon,
+  Bold, Italic, Underline, List, ListOrdered, Eraser
 } from 'lucide-react';
 import { blogService } from '../../lib/blogService';
 import { BlogPost, Category, Comment, MediaItem, BlogSettings } from '../../types/blog';
+import { productService } from '../../lib/productService';
+import { Product, PRODUCTS as STATIC_PRODUCTS, PRODUCT_DETAILED_BULLETS } from '../../lib/productsData';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
@@ -24,8 +27,10 @@ export default function AdminDashboard() {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [settings, setSettings] = useState<BlogSettings | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'posts' | 'media' | 'categories' | 'comments' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'posts' | 'media' | 'categories' | 'comments' | 'settings' | 'products'>('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'published' | 'draft'>('All');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -45,6 +50,15 @@ export default function AdminDashboard() {
     }
   }, [user, isAdmin, authLoading, navigate]);
 
+  const loadProducts = async () => {
+    try {
+      const prods = await productService.getProductsAdmin();
+      setProducts(prods);
+    } catch (e) {
+      console.error('Failed to load products:', e);
+    }
+  };
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -53,7 +67,7 @@ export default function AdminDashboard() {
         blogService.getCategories(),
         blogService.getMedia(),
         blogService.getComments(),
-        blogService.getSettings()
+        blogService.getSettings(),
       ]);
       setPosts(p);
       setCategories(cat);
@@ -65,6 +79,8 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
+    // Load products independently so a blog-service failure doesn't block it
+    await loadProducts().catch(() => {});
   };
 
   const handleLogout = async () => {
@@ -190,7 +206,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1128] text-[#FAF7F0] flex font-sans overflow-hidden">
+    <div className="min-h-screen bg-[#0D1128] text-[#FAF7F0] flex font-sans">
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
@@ -211,24 +227,44 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-[#12173D] border-b border-[#C9A84C]/15 flex items-center justify-between px-4">
+        <h2 className="text-lg font-display text-[#C9A84C] tracking-widest italic">✦ Destiny Admin</h2>
+        <button onClick={() => setSidebarOpen(v => !v)} className="p-2 text-[#C9A84C]">
+          {sidebarOpen ? <XIcon className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
       {/* Sidebar */}
-      <aside className="w-80 bg-[#12173D] border-r border-[#C9A84C]/15 flex flex-col fixed h-screen z-50">
-        <div className="p-10 border-b border-[#C9A84C]/10">
-           <h2 className="text-2xl font-display text-[#C9A84C] tracking-widest italic">✦ Destiny Admin</h2>
+      <aside className={cn(
+        "w-72 lg:w-80 bg-[#12173D] border-r border-[#C9A84C]/15 flex flex-col fixed h-screen z-50 transition-transform duration-300",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
+        <div className="p-8 lg:p-10 border-b border-[#C9A84C]/10">
+          <h2 className="text-xl lg:text-2xl font-display text-[#C9A84C] tracking-widest italic">✦ Destiny Admin</h2>
         </div>
-        
-        <nav className="flex-grow p-6 space-y-2">
+
+        <nav className="flex-grow p-4 lg:p-6 space-y-2 overflow-y-auto">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
             { id: 'posts', label: 'All Articles', icon: FileText },
             { id: 'media', label: 'Media Library', icon: ImageIcon },
             { id: 'categories', label: 'Categories', icon: Tag },
             { id: 'comments', label: 'Comments', icon: MessageSquare, badge: stats.pendingComments },
+            { id: 'products', label: 'Products', icon: Package },
             { id: 'settings', label: 'Blog Settings', icon: Settings },
           ].map(item => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
+              onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
               className={cn(
                 "w-full flex items-center justify-between px-6 py-4 rounded-none text-xs tracking-widest font-bold transition-all group",
                 activeTab === item.id 
@@ -251,8 +287,8 @@ export default function AdminDashboard() {
           ))}
         </nav>
 
-        <div className="p-6 border-t border-[#C9A84C]/10">
-          <button 
+        <div className="p-4 lg:p-6 border-t border-[#C9A84C]/10">
+          <button
             onClick={handleLogout}
             className="w-full flex items-center gap-4 px-6 py-4 rounded-none text-xs tracking-widest font-black text-red-400 hover:bg-red-500/10 transition-all"
           >
@@ -262,9 +298,9 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="ml-80 flex-grow h-screen overflow-y-auto bg-[#0D1128]">
+      <main className="w-full lg:ml-80 flex-grow min-h-screen overflow-y-auto bg-[#0D1128] pt-14 lg:pt-0">
         {/* Render Tabs */}
-        <div className="p-12 pb-24">
+        <div className="p-4 md:p-8 lg:p-12 pb-24">
           <header className="flex justify-between items-end mb-16">
             <div>
               <h1 className="text-4xl font-display font-medium text-[#C9A84C] italic mb-2">
@@ -312,6 +348,7 @@ export default function AdminDashboard() {
           {activeTab === 'categories' && <CategoriesTab categories={categories} loadData={loadData} showToast={showToast} />}
           {activeTab === 'comments' && <CommentsTab comments={comments} loadData={loadData} showToast={showToast} />}
           {activeTab === 'settings' && settings && <SettingsTab settings={settings} onSave={async (s) => { await blogService.saveSettings(s); await loadData(); showToast('Settings saved successfully', 'success'); }} />}
+          {activeTab === 'products' && <ProductsTab products={products} setProducts={setProducts} loadData={loadProducts} showToast={showToast} />}
         </div>
       </main>
     </div>
@@ -823,13 +860,440 @@ function SettingsTab({ settings, onSave }: { settings: BlogSettings, onSave: (s:
           </div>
         </section>
 
-        <button 
+        <button
           onClick={() => onSave(localSettings)}
           className="w-full h-[60px] bg-[#C9A84C] text-white rounded-[6px] text-[12px] font-black tracking-[0.3em] uppercase hover:shadow-2xl transition-all mt-10"
         >
           Synchronize Realm Settings
         </button>
       </div>
+    </div>
+  );
+}
+
+function compressImage(file: File, maxWidth = 1200, quality = 0.82): Promise<string> {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = (maxWidth / w) * h; w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d')?.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function MiniRichEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
+    }
+  }, [value]);
+
+  const exec = (cmd: string, arg = '') => {
+    document.execCommand(cmd, false, arg);
+    editorRef.current && onChange(editorRef.current.innerHTML);
+  };
+
+  const btn = "p-1.5 rounded hover:bg-[#C9A84C]/10 text-mystic-navy/50 hover:text-[#C9A84C] transition-all";
+
+  return (
+    <div className="border border-[#E0D5C0] overflow-hidden">
+      <div className="flex items-center gap-0.5 px-2 py-1.5 bg-[#F5ECD7]/60 border-b border-[#E0D5C0]">
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec('bold'); }} className={btn} title="Bold"><Bold size={13} /></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec('italic'); }} className={btn} title="Italic"><Italic size={13} /></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec('underline'); }} className={btn} title="Underline"><Underline size={13} /></button>
+        <div className="w-px h-4 bg-[#E0D5C0] mx-1" />
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec('insertUnorderedList'); }} className={btn} title="Bullet List"><List size={13} /></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec('insertOrderedList'); }} className={btn} title="Numbered List"><ListOrdered size={13} /></button>
+        <div className="w-px h-4 bg-[#E0D5C0] mx-1" />
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec('removeFormat'); }} className={btn} title="Clear Formatting"><Eraser size={13} /></button>
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={() => editorRef.current && onChange(editorRef.current.innerHTML)}
+        className="min-h-[120px] p-3 text-[14px] text-mystic-navy outline-none leading-relaxed empty:before:content-[attr(data-placeholder)] empty:before:text-mystic-navy/20"
+        data-placeholder="Write product description..."
+      />
+    </div>
+  );
+}
+
+const PRODUCT_CATEGORIES = ['Yantras', 'Crystals', 'Vastu', 'Bracelets'] as const;
+
+function ProductsTab({ products, setProducts, loadData, showToast }: {
+  products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  loadData: () => Promise<void>;
+  showToast: (msg: string, type: 'success' | 'error' | 'info' | 'warning') => void;
+}) {
+  const emptyForm = {
+    name: '',
+    subtitle: '',
+    category: 'Yantras',
+    categories: ['Yantras'] as string[],
+    price: '',
+    rating: '4.9',
+    description: '',
+    images: [] as string[],
+  };
+
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [imgUrlInput, setImgUrlInput] = useState('');
+
+  const slugify = (name: string) =>
+    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  const openAdd = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+    setImgUrlInput('');
+    setModalOpen(true);
+  };
+
+  const bulletsToHtml = (bullets: string[]) =>
+    '<ul>' + bullets.map(b => `<li>${b}</li>`).join('') + '</ul>';
+
+  const handleEdit = (p: Product) => {
+    const isHtmlDesc = /<[a-z][\s\S]*>/i.test(p.description || '');
+    const detailedBullets = PRODUCT_DETAILED_BULLETS[p.id];
+    const description = isHtmlDesc
+      ? p.description
+      : detailedBullets
+        ? bulletsToHtml(detailedBullets)
+        : p.description || '';
+
+    setForm({
+      name: p.name,
+      subtitle: p.subtitle || '',
+      category: p.category,
+      categories: [...p.categories],
+      price: String(p.price),
+      rating: String(p.rating),
+      description,
+      images: p.images && p.images.length > 0 ? [...p.images] : p.image ? [p.image] : [],
+    });
+    setEditingId(p.id);
+    setImgUrlInput('');
+    setModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+    setImgUrlInput('');
+    setModalOpen(false);
+  };
+
+  const addImageUrl = () => {
+    const url = imgUrlInput.trim();
+    if (!url) return;
+    setForm(p => ({ ...p, images: [...p.images, url] }));
+    setImgUrlInput('');
+  };
+
+  const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const compressed = await compressImage(file);
+    setForm(p => ({ ...p, images: [...p.images, compressed] }));
+    e.target.value = '';
+  };
+
+  const removeImage = (idx: number) => {
+    setForm(p => ({ ...p, images: p.images.filter((_, i) => i !== idx) }));
+  };
+
+  const toggleCat = (cat: string) => {
+    setForm(prev => ({
+      ...prev,
+      categories: prev.categories.includes(cat)
+        ? prev.categories.filter(c => c !== cat)
+        : [...prev.categories, cat],
+    }));
+  };
+
+  const handleSubmit = async () => {
+    const descText = form.description.replace(/<[^>]*>/g, '').trim();
+    if (!form.name.trim() || !descText || form.images.length === 0 || !form.price) {
+      showToast('Name, description, at least one image and price are required', 'error');
+      return;
+    }
+    const id = editingId || slugify(form.name);
+    const cats = form.categories.length > 0 ? form.categories : [form.category];
+    const product: Product = {
+      id,
+      name: form.name.trim(),
+      ...(form.subtitle.trim() && { subtitle: form.subtitle.trim() }),
+      category: form.category as Product['category'],
+      categories: cats,
+      price: Number(form.price),
+      rating: Math.min(5, Math.max(0, Number(form.rating) || 4.9)),
+      description: form.description,
+      image: form.images[0],
+      images: form.images,
+    };
+    const isEditing = !!editingId;
+    try {
+      await productService.saveProduct(product);
+    } catch (e) {
+      console.error('Save product error:', e);
+      showToast('Failed to save product. Check Firestore rules or console.', 'error');
+      return;
+    }
+    // Save succeeded — close modal and refresh list independently
+    setForm(emptyForm);
+    setEditingId(null);
+    setModalOpen(false);
+    showToast(isEditing ? 'Product updated' : 'Product added', 'success');
+    loadData().catch(e => console.error('Refresh error:', e));
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Delete "${name}"? This will remove it from the storefront.`)) return;
+    try {
+      await productService.deleteProduct(id);
+    } catch (e) {
+      console.error('Delete product error:', e);
+      showToast('Failed to delete product. Check Firestore rules or console.', 'error');
+      return;
+    }
+    showToast('Product deleted', 'success');
+    loadData().catch(e => console.error('Refresh error:', e));
+  };
+
+  const handleSeedDefaults = async () => {
+    if (!window.confirm(`This will save all ${STATIC_PRODUCTS.length} default products to the database. Products with the same ID will be overwritten. Continue?`)) return;
+    try {
+      await productService.seedProducts(STATIC_PRODUCTS);
+      // Optimistic update — show products immediately without waiting for Supabase re-fetch
+      setProducts([...STATIC_PRODUCTS]);
+      showToast(`Seeded ${STATIC_PRODUCTS.length} default products`, 'success');
+      // Background sync to get server-confirmed data
+      loadData().catch(() => {});
+    } catch {
+      showToast('Failed to seed products', 'error');
+    }
+  };
+
+  const formContent = (
+    <div className="space-y-5">
+      <StandardInput label="Product Name *" value={form.name} onChange={v => setForm(p => ({ ...p, name: v }))} placeholder="e.g. Surya Yantra" />
+      <StandardInput label="Subtitle (optional)" value={form.subtitle} onChange={v => setForm(p => ({ ...p, subtitle: v }))} placeholder="Short tagline or variant info" />
+
+      <StandardSelect
+        label="Primary Category *"
+        value={form.category}
+        onChange={v => setForm(p => ({ ...p, category: v }))}
+        options={PRODUCT_CATEGORIES.map(c => ({ value: c, label: c }))}
+      />
+
+      <div className="flex flex-col gap-2">
+        <label className="text-[16px] font-medium text-[#C9A84C] uppercase tracking-wider">Filter Categories</label>
+        <div className="flex flex-wrap gap-3">
+          {PRODUCT_CATEGORIES.map(cat => (
+            <button key={cat} type="button" onClick={() => toggleCat(cat)}
+              className={cn("px-4 py-2 text-[11px] font-black tracking-widest uppercase border transition-all",
+                form.categories.includes(cat) ? "bg-[#C9A84C] text-white border-[#C9A84C]" : "bg-white text-mystic-navy border-[#E0D5C0] hover:border-[#C9A84C]"
+              )}
+            >{cat}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <StandardInput label="Price (₹) *" type="number" value={form.price} onChange={v => setForm(p => ({ ...p, price: v }))} placeholder="7999" />
+        <StandardInput label="Rating (0–5)" type="number" value={form.rating} onChange={v => setForm(p => ({ ...p, rating: v }))} placeholder="4.9" />
+      </div>
+
+      {/* Rich text description */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[16px] font-medium text-[#C9A84C] uppercase tracking-wider">Description *</label>
+        <MiniRichEditor key={editingId ?? 'new'} value={form.description || ''} onChange={v => setForm(p => ({ ...p, description: v }))} />
+      </div>
+
+      {/* Multi-image manager */}
+      <div className="flex flex-col gap-3">
+        <label className="text-[16px] font-medium text-[#C9A84C] uppercase tracking-wider">Product Images *</label>
+
+        {/* URL input */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Paste image URL and press Add..."
+            value={imgUrlInput}
+            onChange={e => setImgUrlInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+            className="flex-1 h-[44px] border border-[#E0D5C0] px-3 text-[14px] text-mystic-navy outline-none focus:border-[#C9A84C] transition-all"
+          />
+          <button type="button" onClick={addImageUrl}
+            className="h-[44px] px-4 bg-[#1C3557] text-white text-[10px] font-black tracking-widest hover:bg-[#1C3557]/80 transition-all">
+            Add
+          </button>
+        </div>
+
+        {/* File upload */}
+        <label className="h-[44px] border border-dashed border-[#C9A84C]/50 flex items-center justify-center gap-2 text-[11px] font-black tracking-widest text-[#C9A84C] cursor-pointer hover:bg-[#C9A84C]/5 transition-all relative">
+          <Upload className="w-4 h-4" /> Upload Image File
+          <input type="file" accept="image/*" onChange={handleImageFile} className="absolute inset-0 opacity-0 cursor-pointer" />
+        </label>
+
+        {/* Thumbnails grid */}
+        {form.images.length > 0 && (
+          <div className="grid grid-cols-4 gap-2">
+            {form.images.map((img, idx) => (
+              <div key={idx} className="relative aspect-square group">
+                <img src={img} className="w-full h-full object-cover border border-[#E0D5C0]" alt="" />
+                {idx === 0 && (
+                  <span className="absolute bottom-0 left-0 right-0 bg-[#C9A84C] text-white text-[8px] font-black text-center py-0.5 leading-none">
+                    PRIMARY
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 flex items-center justify-center text-xs leading-none hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100"
+                >×</button>
+              </div>
+            ))}
+          </div>
+        )}
+        {form.images.length > 0 && (
+          <p className="text-[10px] text-mystic-navy/40">First image is the primary display image. Remove and re-add to reorder.</p>
+        )}
+      </div>
+
+      <div className="flex gap-3 pt-2">
+        <button onClick={handleSubmit} className="flex-1 h-[52px] bg-[#C9A84C] text-white rounded-[6px] text-[11px] font-black tracking-widest uppercase hover:shadow-xl transition-all">
+          {editingId ? 'Update Product' : 'Add Product'}
+        </button>
+        <button onClick={handleCancel} className="h-[52px] px-6 border border-[#E0D5C0] text-mystic-navy rounded-[6px] text-[11px] font-black tracking-widest uppercase hover:border-[#C9A84C] transition-all">
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header actions */}
+      <div className="flex flex-wrap gap-3 justify-end">
+        <button
+          onClick={handleSeedDefaults}
+          className="px-5 py-3 border border-[#C9A84C]/30 text-[#C9A84C] rounded-none text-[10px] tracking-widest font-black flex items-center gap-2 hover:bg-[#C9A84C]/10 transition-all"
+        >
+          <Upload className="w-4 h-4" /> Load Defaults
+        </button>
+        <button
+          onClick={openAdd}
+          className="px-6 py-3 bg-[#C9A84C] text-[#0D1128] rounded-none text-[10px] tracking-[0.2em] font-black flex items-center gap-2 hover:brightness-110 transition-all shadow-[0_10px_20px_rgba(201,168,76,0.2)]"
+        >
+          <Plus className="w-4 h-4" /> Add Product
+        </button>
+      </div>
+
+      {/* Products Table */}
+      <div className="bg-[#12173D] rounded-none border border-[#C9A84C]/10 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[480px]">
+            <thead>
+              <tr className="bg-[#0B0F2A] border-b border-[#C9A84C]/10">
+                <th className="px-4 py-4 text-[10px] tracking-widest text-white/40 font-black">Product</th>
+                <th className="px-4 py-4 text-[10px] tracking-widest text-white/40 font-black hidden sm:table-cell">Category</th>
+                <th className="px-4 py-4 text-[10px] tracking-widest text-white/40 font-black">Price</th>
+                <th className="px-4 py-4 text-[10px] tracking-widest text-white/40 font-black text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((p: Product) => (
+                <tr key={p.id} className="border-b border-[#C9A84C]/5 hover:bg-white/5 transition-colors">
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-3">
+                      <img src={p.image} className="w-10 h-10 object-cover bg-white/5 border border-white/5 flex-shrink-0" alt="" />
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm mb-0.5 truncate max-w-[130px] sm:max-w-[220px]">{p.name}</p>
+                        <p className="text-[10px] text-white/30 font-bold tracking-widest">★ {p.rating}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 hidden sm:table-cell">
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-none text-[9px] font-black tracking-widest text-[#C9A84C]">
+                      {p.category}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 font-display text-[#C9A84C]">₹{p.price.toLocaleString('en-IN')}</td>
+                  <td className="px-4 py-4">
+                    <div className="flex gap-2 justify-end">
+                      <button onClick={() => handleEdit(p)} className="p-2 bg-white/5 rounded-none border border-white/10 hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all">
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDelete(p.id, p.name)} className="p-2 bg-white/5 rounded-none border border-white/10 hover:bg-red-500/10 hover:text-red-500 transition-all">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {products.length === 0 && (
+          <div className="p-12 text-center space-y-3">
+            <p className="text-white/40 font-display italic text-lg">No products in database.</p>
+            <p className="text-white/20 text-xs tracking-widest">Click <strong className="text-[#C9A84C]">Load Default Products</strong> to import the full catalog, then edit freely.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Add / Edit Modal */}
+      <AnimatePresence>
+        {modalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleCancel}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[201] flex items-center justify-center p-4"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="bg-white w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-[12px] shadow-2xl">
+                <div className="flex items-center justify-between p-6 border-b border-[#E0D5C0] sticky top-0 bg-white z-10">
+                  <h3 className="text-lg font-display font-black text-mystic-navy uppercase tracking-widest">
+                    {editingId ? 'Edit Product' : 'Add New Product'}
+                  </h3>
+                  <button onClick={handleCancel} className="p-1.5 text-mystic-navy/40 hover:text-mystic-navy transition-colors">
+                    <XIcon className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-6">
+                  {formContent}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

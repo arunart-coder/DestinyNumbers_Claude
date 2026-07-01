@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Prepends Vite base URL so images work under /demo/ subdirectory
+// Prepends Vite base URL so images resolve correctly
 export function imgUrl(path: string): string {
   const base = import.meta.env.BASE_URL || '/';
   return base + path.replace(/^\//, '');

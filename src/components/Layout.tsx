@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, MessageCircle, Phone, MapPin, Clock, ChevronDown, ChevronRight } from 'lucide-react';
 import { useCMS } from '../context/CMSContext';
 import { SOCIAL_LINKS, BRAND_DATA } from '../lib/constants';
-import { cn, imgUrl } from '../lib/utils'; import { imgUrl } from '../lib/utils';
+import { cn, imgUrl } from '../lib/utils';
 
 function TopBand() {
   return (
